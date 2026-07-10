@@ -86,6 +86,34 @@
       "react": {
         "takeaway": "الشخص الغريب على الإنترنت لا يحتاج إلى عمرك، ولا إلى معرفة إن كنت في البيت، ولا إلى أسرارك. حين يبدو شيء غريبًا، أخبر شخصًا بالغًا تثق به."
       }
+    },
+    {
+      "id": "whatsapp",
+      "title": "واتساب",
+      "subtitle": "رسالة من رقم مجهول",
+      "icon": "💬",
+      "status": "coming-soon"
+    },
+    {
+      "id": "snapchat",
+      "title": "سناب شات",
+      "subtitle": "رسالة مفاجئة",
+      "icon": "👻",
+      "status": "coming-soon"
+    },
+    {
+      "id": "youtube",
+      "title": "يوتيوب",
+      "subtitle": "تعليقات تحت مقطع",
+      "icon": "▶️",
+      "status": "coming-soon"
+    },
+    {
+      "id": "discord",
+      "title": "ديسكورد",
+      "subtitle": "دعوة إلى خادم جديد",
+      "icon": "🎧",
+      "status": "coming-soon"
     }
   ]
 }

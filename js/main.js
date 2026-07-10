@@ -79,10 +79,12 @@ async function resolveTopic(regionId, topicId) {
   return { region, topic, missions };
 }
 
-/** Reuse one engine per topic; make a fresh one when the topic changes. */
+/** Reuse one engine per topic; make a fresh one when the topic changes. The
+    engine only ever sees playable missions, never the coming-soon slots, so
+    "last mission" and the Mission complete flow stay correct. */
 function engineFor(topicId, missions) {
   if (!state.engine || state.currentTopicId !== topicId) {
-    state.engine = new GameEngine(missions);
+    state.engine = new GameEngine(missions.filter((m) => m.status !== 'coming-soon'));
     state.currentTopicId = topicId;
   }
   return state.engine;
@@ -114,8 +116,12 @@ async function render(route) {
         const loaded = await Promise.all(available.map((tp) => missionsFor(tp)));
         if (!fresh()) return;
 
+        /* Count only the playable missions, not the coming-soon slots. */
         const stats = {};
-        available.forEach((tp, i) => { stats[tp.id] = topicProgress(loaded[i].map((m) => m.id)); });
+        available.forEach((tp, i) => {
+          const playable = loaded[i].filter((m) => m.status !== 'coming-soon').map((m) => m.id);
+          stats[tp.id] = topicProgress(playable);
+        });
         return state.ui.renderRegion(region, (topic) => stats[topic.id] ?? null);
       }
 
@@ -132,6 +138,13 @@ async function render(route) {
         const ctx = await resolveTopic(route.regionId, route.topicId);
         if (!fresh()) return;
         if (!ctx) return navigate({ screen: 'region', regionId: route.regionId });
+
+        /* A coming-soon mission slot has no content, so it never opens (a direct
+           link falls back to the mission list). */
+        const target = ctx.missions.find((m) => m.id === route.missionId);
+        if (!target || target.status === 'coming-soon') {
+          return navigate({ screen: 'topic', regionId: route.regionId, topicId: route.topicId });
+        }
 
         const engine = engineFor(ctx.topic.id, ctx.missions);
         if (!engine.goTo(route.missionId)) {

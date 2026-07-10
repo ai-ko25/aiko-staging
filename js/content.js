@@ -91,6 +91,10 @@ function validateMissions(data, path) {
     const where = `${path}: mission ${i + 1}`;
     if (!mission.id) throw new Error(`${where} has no "id".`);
 
+    /* A coming-soon mission is a placeholder slot in the path: a name and an
+       icon, no content authored yet. Nothing more to validate. */
+    if (mission.status === 'coming-soon') return;
+
     /* A mission is now a short conversation: a "messages" array, each entry one
        message from the sender with its own tappable parts, spot, and decide. */
     if (!Array.isArray(mission.messages) || mission.messages.length === 0) {

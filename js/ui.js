@@ -206,10 +206,12 @@ export function createUI(t, handlers) {
 
       const list = el('mission-list');
       const rows = missions.map((mission) => {
-        const done = isDone(mission.id);
-        const row = make('button', `list-row ${done ? 'is-done' : ''}`);
+        const locked = mission.status === 'coming-soon';
+        const done = !locked && isDone(mission.id);
+        const row = make('button', `list-row ${locked ? 'is-locked' : done ? 'is-done' : ''}`);
         row.type = 'button';
         row.dataset.missionId = mission.id;
+        if (locked) row.disabled = true;
 
         row.append(make('div', 'list-icon', mission.icon ?? '🎯'));
         const info = make('div', 'list-info');
@@ -217,13 +219,11 @@ export function createUI(t, handlers) {
         if (mission.subtitle) info.append(make('p', null, mission.subtitle));
         row.append(info);
 
-        if (done) row.append(make('span', 'list-badge list-done', '✓'));
+        if (locked) row.append(make('span', 'list-badge', t('comingSoon')));
+        else if (done) row.append(make('span', 'list-badge list-done', '✓'));
         else row.append(make('span', 'list-go', '›'));
         return row;
       });
-
-      /* Room for future missions: the topic stays open, more are coming. */
-      rows.push(make('div', 'mission-soon', t('moreMissionsSoon')));
 
       list.replaceChildren(...rows);
       this.show('topic');

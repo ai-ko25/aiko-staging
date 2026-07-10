@@ -48,7 +48,36 @@
         "tagline": "اسمك وصورك وكلمات مرورك وأسرارك.",
         "accent": "--c-accent",
         "status": "coming-soon",
-        "topics": []
+        "topics": [
+          {
+            "id": "privacy-personal-info",
+            "name": "الخصوصية والمعلومات الشخصية",
+            "icon": "🔒",
+            "description": "ما الذي تحتفظ به لنفسك على الإنترنت.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "passwords-accounts",
+            "name": "كلمات المرور والحسابات",
+            "icon": "🔑",
+            "description": "كلمات مرور قوية وحسابات آمنة.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "digital-footprint",
+            "name": "الأثر الرقمي",
+            "icon": "👣",
+            "description": "الأثر الذي تتركه خلفك على الإنترنت.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "photos-consent",
+            "name": "الصور والإذن",
+            "icon": "📸",
+            "description": "مشاركة الصور، وأن تستأذن أولًا.",
+            "status": "coming-soon"
+          }
+        ]
       },
       {
         "id": "spot-the-trick",
@@ -57,7 +86,36 @@
         "tagline": "عمليات الاحتيال والمحتوى المزيّف والأشياء التي ليست كما تبدو.",
         "accent": "--c-wrong",
         "status": "coming-soon",
-        "topics": []
+        "topics": [
+          {
+            "id": "scams-phishing",
+            "name": "الاحتيال والتصيّد",
+            "icon": "🎣",
+            "description": "رسائل تحاول أن تخدعك.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "fake-vs-real",
+            "name": "المزيّف مقابل الحقيقي",
+            "icon": "🎭",
+            "description": "التمييز بين ما هو حقيقي وما هو مختلق.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "ai-chatbots",
+            "name": "الذكاء الاصطناعي والدردشة الآلية",
+            "icon": "🤖",
+            "description": "التحدث إلى الروبوتات، وما هي حقًا.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "downloads-viruses",
+            "name": "التنزيلات والفيروسات",
+            "icon": "🦠",
+            "description": "ما الآمن أن تضغط عليه وتثبّته.",
+            "status": "coming-soon"
+          }
+        ]
       },
       {
         "id": "feeling-good",
@@ -66,7 +124,36 @@
         "tagline": "التوازن، واللطف مع نفسك، ومعرفة متى تأخذ استراحة.",
         "accent": "--c-correct",
         "status": "coming-soon",
-        "topics": []
+        "topics": [
+          {
+            "id": "screen-time-balance",
+            "name": "وقت الشاشة والتوازن",
+            "icon": "⏰",
+            "description": "أن تعرف متى تأخذ استراحة.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "feelings-online",
+            "name": "المشاعر على الإنترنت",
+            "icon": "💭",
+            "description": "كيف يمكن للإنترنت أن يؤثر في مشاعرك.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "upsetting-content",
+            "name": "المحتوى المزعج",
+            "icon": "😟",
+            "description": "ماذا تفعل حين يزعجك شيء ما.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "asking-for-help",
+            "name": "طلب المساعدة",
+            "icon": "🆘",
+            "description": "إلى من تلجأ حين تحتاج مساعدة.",
+            "status": "coming-soon"
+          }
+        ]
       }
     ]
   }

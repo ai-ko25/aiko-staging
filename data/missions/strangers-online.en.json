@@ -86,6 +86,34 @@
       "react": {
         "takeaway": "A stranger online doesn't need your age, whether you're home, or your secrets. When something feels off, tell a grown-up you trust."
       }
+    },
+    {
+      "id": "whatsapp",
+      "title": "WhatsApp",
+      "subtitle": "A wrong-number message",
+      "icon": "💬",
+      "status": "coming-soon"
+    },
+    {
+      "id": "snapchat",
+      "title": "Snapchat",
+      "subtitle": "A surprise DM",
+      "icon": "👻",
+      "status": "coming-soon"
+    },
+    {
+      "id": "youtube",
+      "title": "YouTube",
+      "subtitle": "Comments under a video",
+      "icon": "▶️",
+      "status": "coming-soon"
+    },
+    {
+      "id": "discord",
+      "title": "Discord",
+      "subtitle": "A new server invite",
+      "icon": "🎧",
+      "status": "coming-soon"
     }
   ]
 }

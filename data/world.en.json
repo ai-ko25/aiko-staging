@@ -48,7 +48,36 @@
         "tagline": "Your name, photos, passwords, and secrets.",
         "accent": "--c-accent",
         "status": "coming-soon",
-        "topics": []
+        "topics": [
+          {
+            "id": "privacy-personal-info",
+            "name": "Privacy & Personal Info",
+            "icon": "🔒",
+            "description": "What to keep to yourself online.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "passwords-accounts",
+            "name": "Passwords & Accounts",
+            "icon": "🔑",
+            "description": "Strong passwords and safe accounts.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "digital-footprint",
+            "name": "Digital Footprint",
+            "icon": "👣",
+            "description": "The trail you leave behind you online.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "photos-consent",
+            "name": "Photos & Consent",
+            "icon": "📸",
+            "description": "Sharing pictures, and asking first.",
+            "status": "coming-soon"
+          }
+        ]
       },
       {
         "id": "spot-the-trick",
@@ -57,7 +86,36 @@
         "tagline": "Scams, fakes, and things that aren't what they seem.",
         "accent": "--c-wrong",
         "status": "coming-soon",
-        "topics": []
+        "topics": [
+          {
+            "id": "scams-phishing",
+            "name": "Scams & Phishing",
+            "icon": "🎣",
+            "description": "Messages that try to trick you.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "fake-vs-real",
+            "name": "Fake vs Real",
+            "icon": "🎭",
+            "description": "Telling what's true from what's made up.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "ai-chatbots",
+            "name": "AI & Chatbots",
+            "icon": "🤖",
+            "description": "Talking to bots, and what they really are.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "downloads-viruses",
+            "name": "Downloads & Viruses",
+            "icon": "🦠",
+            "description": "What is safe to click and install.",
+            "status": "coming-soon"
+          }
+        ]
       },
       {
         "id": "feeling-good",
@@ -66,7 +124,36 @@
         "tagline": "Balance, kindness to yourself, and knowing when to take a break.",
         "accent": "--c-correct",
         "status": "coming-soon",
-        "topics": []
+        "topics": [
+          {
+            "id": "screen-time-balance",
+            "name": "Screen-Time & Balance",
+            "icon": "⏰",
+            "description": "Knowing when to take a break.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "feelings-online",
+            "name": "Feelings Online",
+            "icon": "💭",
+            "description": "How the internet can make you feel.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "upsetting-content",
+            "name": "Upsetting Content",
+            "icon": "😟",
+            "description": "What to do when something bothers you.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "asking-for-help",
+            "name": "Asking for Help",
+            "icon": "🆘",
+            "description": "Who to turn to when you need a hand.",
+            "status": "coming-soon"
+          }
+        ]
       }
     ]
   }
