@@ -50,37 +50,54 @@
         <code class="error-hint">python3 serve.py</code>
       </section>
 
-      <!-- 1. OPEN, Aiko greets the child. -->
-      <section class="panel panel-center" id="open-screen" hidden>
-        <figure class="aiko aiko-lg">
-          <img class="aiko-img" src="assets/aiko/idle.png" alt="">
-        </figure>
-        <h1 class="panel-title" data-i18n="greeting"></h1>
-        <p class="panel-body" data-i18n="tagline"></p>
-        <button type="button" class="btn btn-primary" id="enter-btn" data-i18n="enter"></button>
+      <!-- 1. OPEN, the companion greets the child (dark home, styled from
+           aiko_game_demo-2.html). -->
+      <section class="dark-screen" id="open-screen" hidden>
+        <div class="home">
+          <img class="home-aiko" src="assets/aiko/idle.png" alt="">
+          <div class="home-speech">
+            <span class="home-greeting" data-i18n="greeting"></span>
+            <span class="home-tagline" data-i18n="tagline"></span>
+          </div>
+          <button type="button" class="cta" id="enter-btn" data-i18n="enter"></button>
+        </div>
       </section>
 
-      <!-- 2. WORLD MAP, the four regions (cards built by ui.js). -->
-      <section class="panel" id="world-screen" hidden>
-        <h1 class="panel-title" data-i18n="worldTitle"></h1>
-        <p class="panel-body" data-i18n="worldSubtitle"></p>
-        <div class="card-grid" id="region-grid"></div>
+      <!-- 2. WORLD MAP, the four regions as islands along a winding path
+           (styled from aiko_game_demo-2.html). Islands built by ui.js. -->
+      <section class="dark-screen" id="world-screen" hidden>
+        <div class="map-head">
+          <h2 data-i18n="worldTitle"></h2>
+          <p data-i18n="worldSubtitle"></p>
+        </div>
+        <div class="map-canvas">
+          <svg class="map-path" viewBox="0 0 340 500" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M 90 90 Q 240 130 250 230 Q 255 330 100 350 Q 40 365 120 450"
+                  fill="none" stroke="rgba(239,159,39,.35)" stroke-width="3"
+                  stroke-dasharray="6 8" stroke-linecap="round"/>
+          </svg>
+          <div class="islands" id="region-grid"></div>
+        </div>
       </section>
 
-      <!-- 3. REGION, its topics (cards built by ui.js). -->
-      <section class="panel" id="region-screen" hidden>
-        <button type="button" class="back-link" id="region-back" data-i18n="back"></button>
-        <h1 class="panel-title" id="region-title"></h1>
-        <p class="panel-body" id="region-tagline"></p>
-        <div class="card-grid" id="topic-grid"></div>
+      <!-- 3. REGION, its topics as a list (styled from aiko_game_demo-2.html). -->
+      <section class="dark-screen" id="region-screen" hidden>
+        <div class="region-banner">
+          <button type="button" class="back" id="region-back" data-i18n="back"></button>
+          <h2 id="region-title"></h2>
+          <p id="region-tagline"></p>
+        </div>
+        <div class="topics" id="topic-grid"></div>
       </section>
 
-      <!-- 4. TOPIC, its missions (cards built by ui.js). -->
-      <section class="panel" id="topic-screen" hidden>
-        <button type="button" class="back-link" id="topic-back" data-i18n="back"></button>
-        <h1 class="panel-title" id="topic-title"></h1>
-        <p class="panel-body" id="topic-desc"></p>
-        <ul class="mission-list" id="mission-list"></ul>
+      <!-- 4. TOPIC, its missions as a list (same dark list style). -->
+      <section class="dark-screen" id="topic-screen" hidden>
+        <div class="region-banner">
+          <button type="button" class="back" id="topic-back" data-i18n="back"></button>
+          <h2 id="topic-title"></h2>
+          <p id="topic-desc"></p>
+        </div>
+        <ul class="topics" id="mission-list"></ul>
       </section>
 
       <!-- 5. MISSION, the scene plays: the message arrives, the child taps the

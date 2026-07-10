@@ -78,16 +78,16 @@ export function createUI(t, handlers) {
   /* Delegated clicks, cards, message pieces, and choice cards are rebuilt
      often, so we listen on the containers that stay put. */
   el('region-grid').addEventListener('click', (e) => {
-    const card = e.target.closest('.card');
-    if (card && !card.disabled) handlers.onRegion(card.dataset.regionId);
+    const island = e.target.closest('.island');
+    if (island && !island.disabled) handlers.onRegion(island.dataset.regionId);
   });
   el('topic-grid').addEventListener('click', (e) => {
-    const card = e.target.closest('.card');
-    if (card && !card.disabled) handlers.onTopic(card.dataset.topicId);
+    const row = e.target.closest('.list-row');
+    if (row && !row.disabled) handlers.onTopic(row.dataset.topicId);
   });
   el('mission-list').addEventListener('click', (e) => {
-    const row = e.target.closest('.mission-row');
-    if (row) handlers.onMission(row.dataset.missionId);
+    const row = e.target.closest('.list-row');
+    if (row && !row.disabled) handlers.onMission(row.dataset.missionId);
   });
   el('message-text').addEventListener('click', (e) => {
     const piece = e.target.closest('.msg-piece');
@@ -141,27 +141,28 @@ export function createUI(t, handlers) {
       this.show('open');
     },
 
-    /* ---------------- 2. World map ---------------- */
+    /* ---------------- 2. World map (islands along a path) ---------------- */
     renderWorld(regions) {
       this.hideScore();
       const grid = el('region-grid');
       grid.replaceChildren(...regions.map((region) => {
         const locked = region.status !== 'available';
-        const card = make('button', `card${locked ? ' is-locked' : ''}`);
-        card.type = 'button';
-        card.dataset.regionId = region.id;
-        card.disabled = locked;
-        if (region.accent) card.style.setProperty('--card-accent', `var(${region.accent})`);
+        const island = make('button', `island ${locked ? 'is-locked' : 'is-active'}`);
+        island.type = 'button';
+        island.dataset.regionId = region.id;
+        island.disabled = locked;
+        if (region.accent) island.style.setProperty('--card-accent', `var(${region.accent})`);
 
-        card.append(make('span', 'card-title', region.name));
-        if (region.tagline) card.append(make('span', 'card-desc', region.tagline));
-        if (locked) card.append(make('span', 'badge badge-soon', t('comingSoon')));
-        return card;
+        const blob = make('div', 'island-blob', region.icon ?? '◆');
+        if (locked) blob.append(make('span', 'island-lock', '🔒'));
+        island.append(blob);
+        island.append(make('div', 'island-label', region.name));
+        return island;
       }));
       this.show('world');
     },
 
-    /* ---------------- 3. Region ---------------- */
+    /* ---------------- 3. Region (topic list) ---------------- */
     renderRegion(region, statsFor) {
       this.hideScore();
       el('region-title').textContent = region.name;
@@ -170,47 +171,61 @@ export function createUI(t, handlers) {
       const grid = el('topic-grid');
       grid.replaceChildren(...(region.topics ?? []).map((topic) => {
         const locked = topic.status !== 'available';
-        const card = make('button', `card${locked ? ' is-locked' : ''}`);
-        card.type = 'button';
-        card.dataset.topicId = topic.id;
-        card.disabled = locked;
-        if (region.accent) card.style.setProperty('--card-accent', `var(${region.accent})`);
+        const row = make('button', `list-row ${locked ? 'is-locked' : ''}`);
+        row.type = 'button';
+        row.dataset.topicId = topic.id;
+        row.disabled = locked;
+        if (region.accent) row.style.setProperty('--card-accent', `var(${region.accent})`);
 
-        card.append(make('span', 'card-title', topic.name));
-        if (topic.description) card.append(make('span', 'card-desc', topic.description));
+        row.append(make('div', 'list-icon', topic.icon ?? '•'));
+        const info = make('div', 'list-info');
+        info.append(make('h4', null, topic.name));
+        if (topic.description) info.append(make('p', null, topic.description));
+        row.append(info);
 
         if (locked) {
-          card.append(make('span', 'badge badge-soon', t('comingSoon')));
+          row.append(make('span', 'list-badge', t('comingSoon')));
         } else {
           const stats = statsFor(topic);   // { done, total }
           if (stats) {
-            card.append(make('span', 'badge badge-progress',
+            row.append(make('span', 'list-badge',
               t('missionsDone', { done: stats.done, total: stats.total })));
           }
+          row.append(make('span', 'list-go', '›'));
         }
-        return card;
+        return row;
       }));
       this.show('region');
     },
 
-    /* ---------------- 4. Topic ---------------- */
+    /* ---------------- 4. Topic (mission list) ---------------- */
     renderTopic(topic, missions, isDone) {
       this.hideScore();
       el('topic-title').textContent = topic.name;
       el('topic-desc').textContent = topic.description ?? '';
 
       const list = el('mission-list');
-      list.replaceChildren(...missions.map((mission, i) => {
+      const rows = missions.map((mission) => {
         const done = isDone(mission.id);
-        const row = make('button', `mission-row${done ? ' is-done' : ''}`);
+        const row = make('button', `list-row ${done ? 'is-done' : ''}`);
         row.type = 'button';
         row.dataset.missionId = mission.id;
 
-        row.append(make('span', 'mission-row-num', String(i + 1)));
-        row.append(make('span', 'mission-row-title', mission.title ?? mission.id));
-        if (done) row.append(make('span', 'mission-row-tick', '✓'));
+        row.append(make('div', 'list-icon', mission.icon ?? '🎯'));
+        const info = make('div', 'list-info');
+        info.append(make('h4', null, mission.title ?? mission.id));
+        if (mission.subtitle) info.append(make('p', null, mission.subtitle));
+        row.append(info);
+
+        if (done) row.append(make('span', 'list-badge list-done', '✓'));
+        else row.append(make('span', 'list-go', '›'));
         return row;
-      }));
+      });
+
+      /* Room for future missions: the topic stays open, more are coming. */
+      rows.push(make('div', 'mission-soon', t('moreMissionsSoon')));
+
+      list.replaceChildren(...rows);
       this.show('topic');
     },
 
@@ -363,8 +378,10 @@ export function createUI(t, handlers) {
           el('takeaway-text').textContent = takeaway;
           el('takeaway').hidden = false;
         }
+        /* Between messages the button continues the SAME mission ("Keep going");
+           only the last message ends the mission ("Finish mission"). */
         const next = el('next-btn');
-        next.textContent = isLastMessage ? t('finish') : t('next');
+        next.textContent = isLastMessage ? t('finish') : t('keepGoing');
         el('feedback').hidden = false;
         next.focus();
       } else {

@@ -5,6 +5,7 @@
       {
         "id": "people-friends",
         "name": "الناس والأصدقاء",
+        "icon": "👥",
         "tagline": "الأشخاص الذين تقابلهم وتتحدث إليهم على الإنترنت.",
         "accent": "--c-primary",
         "status": "available",
@@ -12,6 +13,7 @@
           {
             "id": "strangers-online",
             "name": "الغرباء على الإنترنت",
+            "icon": "🎮",
             "description": "أشخاص لم تقابلهم في الحياة الحقيقية.",
             "status": "available",
             "missions": "strangers-online"
@@ -19,18 +21,21 @@
           {
             "id": "bullying-kindness",
             "name": "التنمّر واللطف",
+            "icon": "💬",
             "description": "التعامل مع الإساءة، وأن تكون صديقًا طيّبًا.",
             "status": "coming-soon"
           },
           {
             "id": "peer-pressure",
             "name": "ضغط الأصدقاء",
+            "icon": "🫂",
             "description": "حين يدفعك الأصدقاء لفعل شيء ما.",
             "status": "coming-soon"
           },
           {
             "id": "livestreams",
             "name": "البث المباشر",
+            "icon": "📺",
             "description": "البث المباشر، ومن يشاهدك فعلًا.",
             "status": "coming-soon"
           }
@@ -39,6 +44,7 @@
       {
         "id": "private-world",
         "name": "عالمك الخاص",
+        "icon": "🔐",
         "tagline": "اسمك وصورك وكلمات مرورك وأسرارك.",
         "accent": "--c-accent",
         "status": "coming-soon",
@@ -47,6 +53,7 @@
       {
         "id": "spot-the-trick",
         "name": "اكتشف الخدعة",
+        "icon": "🕵️",
         "tagline": "عمليات الاحتيال والمحتوى المزيّف والأشياء التي ليست كما تبدو.",
         "accent": "--c-wrong",
         "status": "coming-soon",
@@ -55,6 +62,7 @@
       {
         "id": "feeling-good",
         "name": "الشعور بالرضا على الإنترنت",
+        "icon": "💛",
         "tagline": "التوازن، واللطف مع نفسك، ومعرفة متى تأخذ استراحة.",
         "accent": "--c-correct",
         "status": "coming-soon",

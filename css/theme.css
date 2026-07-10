@@ -32,6 +32,15 @@
   --c-mote:          #ffc368;   /* floating dust motes in the scene */
   --c-risk-ring:     #f2994a;   /* amber ring on a tempting wrong pick */
 
+  /* ---- Night UI ---- (the dark travel world: home, map, region, topic) */
+  --c-night:         #14102e;
+  --c-night-2:       #1e1a44;
+  --c-night-3:       #191540;
+  --c-on-dark:       #ffffff;
+  --c-on-dark-soft:  rgba(255, 255, 255, 0.55);
+  --c-on-dark-faint: rgba(255, 255, 255, 0.4);
+  --c-glow:          rgba(239, 159, 39, 0.55);
+
   /* ---- Type ---- */
   --font-display: "Baloo 2", system-ui, sans-serif;              /* headings  */
   --font-body:    "Nunito", system-ui, -apple-system, sans-serif; /* body     */
@@ -67,10 +76,30 @@
 }
 
 body {
-  background: var(--c-bg);
-  color: var(--c-ink);
+  background:
+    radial-gradient(1200px 700px at 20% -10%, rgba(127, 119, 221, 0.18), transparent 60%),
+    radial-gradient(1000px 800px at 100% 110%, rgba(239, 159, 39, 0.10), transparent 55%),
+    var(--c-night);
+  background-attachment: fixed;
+  color: var(--c-on-dark);
   font-family: var(--font-body);
   font-size: var(--size-md);
+  min-height: 100vh;
+}
+
+/* Soft star dust across the night background (from aiko_game_demo-2.html). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 15% 30%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 70% 20%, rgba(255, 255, 255, 0.35), transparent),
+    radial-gradient(1.5px 1.5px at 40% 70%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 85% 60%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 25% 85%, rgba(255, 255, 255, 0.4), transparent);
 }
 
 /* Every rule in game.css uses logical properties, `margin-inline-start`

@@ -2,6 +2,8 @@
    the feedback panel. Uses only the names defined in theme.css. */
 
 #app {
+  position: relative;
+  z-index: 1;                 /* above the body star dust */
   max-width: 44rem;
   margin-inline: auto;
   padding: var(--sp-5) var(--sp-4);
@@ -47,15 +49,15 @@
 
 .lang-toggle {
   font-size: var(--size-sm);
-  color: var(--c-primary);
+  color: var(--c-on-dark);
   padding: var(--sp-1) var(--sp-3);
-  border: 1px solid var(--c-border);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-sm);
-  background: var(--c-surface);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .lang-toggle:hover {
-  border-color: var(--c-primary);
+  border-color: var(--c-accent);
 }
 
 /* ---------- Panels ---------- */
@@ -69,10 +71,18 @@
 .panel {
   width: 100%;
   background: var(--c-surface);
+  color: var(--c-ink);          /* dark text on the white cards, on a dark page */
   border: 1px solid var(--c-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: var(--sp-6);
+}
+
+/* Keep the plain cards (loading, error, mission complete) at a phone width and
+   centred, so they sit among the dark frames as one device, not a wide slab. */
+.panel:not(.panel-scene) {
+  max-width: 440px;
+  margin-inline: auto;
 }
 
 .panel-title {
@@ -127,7 +137,9 @@
 .panel-scene .back-link {
   max-width: 440px;
   margin: 0 auto var(--sp-2);
+  color: var(--c-on-dark-soft);   /* it sits on the dark page, above the light frame */
 }
+.panel-scene .back-link:hover { color: var(--c-accent); }
 
 /* The runner's phone frame: tall and generous, soft purple sky top to bottom,
    centred on desktop, full-width on a small screen. HUD floats on top, the
@@ -820,8 +832,21 @@
   color: #fff;
 }
 
-.mission-row-title { flex: 1; font-weight: 600; }
+.mission-row-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.mission-row-title { font-weight: 700; }
+.mission-row-sub { font-size: var(--size-sm); font-weight: 600; color: var(--c-ink-soft); }
 .mission-row-tick { flex: none; color: var(--c-correct); font-weight: 700; }
+
+/* Placeholder that keeps the topic open: more missions are coming. */
+.mission-soon {
+  padding: var(--sp-4);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  text-align: center;
+  font-size: var(--size-sm);
+  font-weight: 700;
+  color: var(--c-on-dark-soft);
+}
 
 /* ---------- Topic complete: stars, parent note, confetti ---------- */
 
@@ -906,5 +931,226 @@
 .footer {
   text-align: center;
   font-size: var(--size-sm);
-  color: var(--c-ink-soft);
+  color: var(--c-on-dark-soft);
 }
+
+/* ================================================================== *
+ *  The dark travel world: home, world map, region, topic
+ *  (styling ported from reference/aiko_game_demo-2.html)
+ * ================================================================== */
+
+/* Each of these screens is a phone-ish dark frame centred on the page, the
+   same footprint as the mission scene, so the app reads as one device. */
+.dark-screen {
+  width: 100%;
+  max-width: 400px;
+  margin-inline: auto;
+  min-height: min(84vh, 780px);
+  display: flex;
+  flex-direction: column;
+  color: var(--c-on-dark);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- Home / companion ---------- */
+
+#open-screen {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(239, 159, 39, 0.18), transparent 55%),
+    linear-gradient(180deg, var(--c-night-2), var(--c-night));
+}
+.home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px 24px;
+  gap: 16px;
+}
+.home-aiko {
+  width: 180px;
+  filter: drop-shadow(0 0 34px var(--c-glow));
+  animation: home-bob 3.2s ease-in-out infinite;
+}
+@keyframes home-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.home-speech {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px 18px 18px 4px;
+  padding: 14px 18px;
+  max-width: 270px;
+}
+.home-greeting {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+}
+.home-tagline {
+  display: block;
+  margin-block-start: 4px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--c-on-dark);
+}
+
+/* The gold call-to-action button (demo-2 .btn). */
+.cta {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 32px;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--c-accent), #f5b23c);
+  color: var(--c-ink);
+  box-shadow: 0 8px 22px rgba(239, 159, 39, 0.4);
+  transition: transform 0.15s ease;
+}
+.cta:hover { transform: translateY(-2px); }
+
+/* ---------- World map (islands + winding path) ---------- */
+
+#world-screen {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(127, 119, 221, 0.25), transparent 45%),
+    radial-gradient(circle at 75% 80%, rgba(29, 158, 117, 0.18), transparent 45%),
+    linear-gradient(180deg, var(--c-night-2), var(--c-night));
+}
+.map-head { padding: 18px 22px 4px; }
+.map-head h2 { font-family: var(--font-display); font-weight: 800; font-size: 20px; }
+.map-head p { font-size: 12px; color: var(--c-on-dark-soft); margin-block-start: 2px; }
+
+.map-canvas { position: relative; flex: 1; min-height: 500px; }
+.map-path { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.islands { position: absolute; inset: 0; }
+
+.island {
+  position: absolute;
+  width: 118px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--c-on-dark);
+  transition: transform 0.2s ease;
+}
+.island:hover:not(.is-locked) { transform: translateY(-4px) scale(1.03); }
+.island.is-locked { opacity: 0.5; cursor: default; }
+/* Physical left/top on purpose: the map is a spatial layout, so it stays the
+   same in both reading directions and lines up with the fixed SVG path. */
+.island:nth-child(1) { left: 32px;  top: 40px; }
+.island:nth-child(2) { left: 200px; top: 150px; }
+.island:nth-child(3) { left: 44px;  top: 270px; }
+.island:nth-child(4) { left: 150px; top: 390px; }
+
+.island-blob {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  margin: 0 auto;
+  border-radius: 46% 54% 52% 48% / 54% 48% 52% 46%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  background: var(--card-accent, var(--c-primary));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), inset 0 2px 8px rgba(255, 255, 255, 0.25);
+}
+.island.is-active .island-blob { animation: island-pulse 2s ease-in-out infinite; }
+@keyframes island-pulse {
+  0%, 100% { box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), inset 0 2px 8px rgba(255, 255, 255, 0.25), 0 0 0 0 rgba(239, 159, 39, 0.5); }
+  50%      { box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), inset 0 2px 8px rgba(255, 255, 255, 0.25), 0 0 24px 6px rgba(239, 159, 39, 0.45); }
+}
+.island-label { font-size: 11px; font-weight: 800; margin-block-start: 8px; line-height: 1.2; }
+.island-lock {
+  position: absolute;
+  inset-block-start: -4px;
+  inset-inline-end: -4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+/* ---------- Region and topic list screens ---------- */
+
+#region-screen, #topic-screen {
+  background:
+    radial-gradient(circle at 30% 10%, rgba(127, 119, 221, 0.28), transparent 50%),
+    linear-gradient(180deg, var(--c-night-2), var(--c-night-3));
+}
+.region-banner { padding: 18px 20px 8px; }
+.region-banner .back {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-on-dark-soft);
+  cursor: pointer;
+  margin-block-end: 8px;
+  display: inline-block;
+}
+.region-banner .back:hover { color: var(--c-accent); }
+.region-banner .back::before { content: "\2039"; margin-inline-end: 0.35em; }
+:root[dir="rtl"] .region-banner .back::before { content: "\203A"; }
+.region-banner h2 { font-family: var(--font-display); font-weight: 800; font-size: 22px; }
+.region-banner p { font-size: 12px; color: var(--c-on-dark-soft); margin-block-start: 2px; }
+
+.topics {
+  padding: 6px 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+/* One row serves topics (in a region) and missions (in a topic). */
+.list-row {
+  width: 100%;
+  text-align: start;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--c-on-dark);
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+.list-row:hover:not(.is-locked) {
+  background: rgba(127, 119, 221, 0.15);
+  border-color: var(--c-primary);
+  transform: translateY(-1px);
+}
+.list-row.is-locked { opacity: 0.45; cursor: default; }
+
+.list-icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: var(--card-accent, rgba(255, 255, 255, 0.08));
+}
+.list-row.is-done .list-icon { background: rgba(63, 211, 155, 0.2); }
+
+.list-info { flex: 1; min-width: 0; }
+.list-info h4 { font-size: 14px; font-weight: 800; }
+.list-info p { font-size: 11px; color: var(--c-on-dark-soft); margin-block-start: 1px; }
+
+.list-badge { flex: none; font-size: 11px; font-weight: 800; color: var(--c-accent); }
+.list-badge.list-done { color: var(--c-correct-bright); }
+.list-go { flex: none; font-size: 18px; color: var(--c-on-dark-faint); }

@@ -4,7 +4,9 @@
   "missions": [
     {
       "id": "stranger-dm",
-      "title": "رسالة من شخص جديد",
+      "title": "دردشة اللعبة",
+      "subtitle": "شخص غريب في لعبتك",
+      "icon": "🎮",
       "setting": "🎮 دردشة اللعبة",
       "sender": "شخص على الإنترنت",
       "messages": [

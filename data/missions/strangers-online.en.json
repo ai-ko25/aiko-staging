@@ -4,7 +4,9 @@
   "missions": [
     {
       "id": "stranger-dm",
-      "title": "A Message From Someone New",
+      "title": "Game Chat",
+      "subtitle": "A stranger in your game",
+      "icon": "🎮",
       "setting": "🎮 Game Chat",
       "sender": "someone online",
       "messages": [

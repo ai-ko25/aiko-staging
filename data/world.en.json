@@ -5,6 +5,7 @@
       {
         "id": "people-friends",
         "name": "People & Friends",
+        "icon": "👥",
         "tagline": "The people you meet and talk to online.",
         "accent": "--c-primary",
         "status": "available",
@@ -12,6 +13,7 @@
           {
             "id": "strangers-online",
             "name": "Strangers Online",
+            "icon": "🎮",
             "description": "People you've never met in real life.",
             "status": "available",
             "missions": "strangers-online"
@@ -19,18 +21,21 @@
           {
             "id": "bullying-kindness",
             "name": "Bullying & Being Kind",
+            "icon": "💬",
             "description": "Handling meanness, and being a good friend.",
             "status": "coming-soon"
           },
           {
             "id": "peer-pressure",
             "name": "Peer Pressure",
+            "icon": "🫂",
             "description": "When friends push you to do something.",
             "status": "coming-soon"
           },
           {
             "id": "livestreams",
             "name": "Livestreams",
+            "icon": "📺",
             "description": "Going live, and who's really watching.",
             "status": "coming-soon"
           }
@@ -39,6 +44,7 @@
       {
         "id": "private-world",
         "name": "Your Private World",
+        "icon": "🔐",
         "tagline": "Your name, photos, passwords, and secrets.",
         "accent": "--c-accent",
         "status": "coming-soon",
@@ -47,6 +53,7 @@
       {
         "id": "spot-the-trick",
         "name": "Spot the Trick",
+        "icon": "🕵️",
         "tagline": "Scams, fakes, and things that aren't what they seem.",
         "accent": "--c-wrong",
         "status": "coming-soon",
@@ -55,6 +62,7 @@
       {
         "id": "feeling-good",
         "name": "Feeling Good Online",
+        "icon": "💛",
         "tagline": "Balance, kindness to yourself, and knowing when to take a break.",
         "accent": "--c-correct",
         "status": "coming-soon",
