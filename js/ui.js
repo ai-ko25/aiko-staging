@@ -1,7 +1,7 @@
-/* ui.js — the stage crew.
+/* ui.js, the stage crew.
  *
  * Takes what main.js and the engine say is true and paints it onto the page. It
- * decides nothing — it doesn't know what a correct answer is, only that it was
+ * decides nothing, it doesn't know what a correct answer is, only that it was
  * told to light a piece of the message gold. Every change to the page happens
  * here. It never builds a URL and never reads a data file: it calls the
  * handlers main.js gives it, and draws whatever it's handed.
@@ -10,20 +10,22 @@
 const el = (id) => document.getElementById(id);
 
 /* Which sprite Aiko wears for each mood. Presentation assets, not mission
-   content, so they live with the drawing code — the engine never sees them. */
+   content, so they live with the drawing code, the engine never sees them. */
 const AIKO_SPRITE = {
   idle:  'assets/aiko/idle.png',
   safe:  'assets/aiko/safe.png',
   risky: 'assets/aiko/risky.png',
 };
 
+/* Swap Aiko's image and toggle the runner's cheer / worried classes, which
+   tune her glow and give her a little pop or wobble as she reacts. */
 function setAiko(mood) {
   const img = el('aiko-img');
   const figure = el('aiko-figure');
   if (!img || !figure) return;
   img.src = AIKO_SPRITE[mood] ?? AIKO_SPRITE.idle;
-  figure.classList.toggle('is-safe', mood === 'safe');
-  figure.classList.toggle('is-risky', mood === 'risky');
+  figure.classList.toggle('cheer', mood === 'safe');
+  figure.classList.toggle('worried', mood === 'risky');
 }
 
 /* Every screen is a <section> in index.html; show() reveals exactly one. */
@@ -38,12 +40,17 @@ function make(tag, className, text) {
 }
 
 /* The scene runs on a few short timers (the message "arrives", Aiko's hint
-   fades). They are all registered here so a new render can cancel the lot —
+   fades). They are all registered here so a new render can cancel the lot , 
    otherwise a leftover timer from the previous mission could redraw stale
    content on top of the new one. */
 let sceneTimers = [];
 function later(fn, ms) { sceneTimers.push(setTimeout(fn, ms)); }
 function clearSceneTimers() { sceneTimers.forEach(clearTimeout); sceneTimers = []; }
+
+/* Which message of the conversation we're on, so the progress bar and stepping
+   tiles can be updated from the spot/decide handlers without re-passing them. */
+let sceneN = 1;
+let sceneTotal = 1;
 
 function aikoSay(text) {
   const bubble = el('aiko-bubble');
@@ -56,7 +63,7 @@ function aikoSay(text) {
  * @param {Object}   handlers  what to call when the child clicks something
  */
 export function createUI(t, handlers) {
-  /* Persistent buttons — these exist for the whole session. */
+  /* Persistent buttons, these exist for the whole session. */
   el('home-btn').addEventListener('click', handlers.onHome);
   el('lang-toggle').addEventListener('click', handlers.onLangToggle);
   el('enter-btn').addEventListener('click', handlers.onEnter);
@@ -68,7 +75,7 @@ export function createUI(t, handlers) {
   el('replay-btn').addEventListener('click', handlers.onReplay);
   el('more-topics-btn').addEventListener('click', handlers.onExitComplete);
 
-  /* Delegated clicks — cards, message pieces, and choice cards are rebuilt
+  /* Delegated clicks, cards, message pieces, and choice cards are rebuilt
      often, so we listen on the containers that stay put. */
   el('region-grid').addEventListener('click', (e) => {
     const card = e.target.closest('.card');
@@ -207,25 +214,38 @@ export function createUI(t, handlers) {
       this.show('topic');
     },
 
-    /* ---------------- 5a. Mission — the scene plays (SPOT) ---------------- */
-    renderMissionScene(mission, missionNumber, total, stars) {
+    /* ---------------- 5a. Mission, a message plays (SPOT) ----------------
+     * A mission is a conversation of several messages. This draws ONE message
+     * (the current one) into the scene, then plays the little arrival sequence.
+     * Aiko's opening question sits in the dock hint; her bubble is kept for her
+     * reactions, exactly as the runner does, so two long bubbles never collide.
+     */
+    renderMissionScene(mission, message, messageNumber, messageTotal, stars) {
       clearSceneTimers();
+      sceneN = messageNumber;
+      sceneTotal = messageTotal;
 
       el('scene-setting').textContent = mission.setting ?? mission.title ?? '';
       el('sender-label').textContent = mission.sender ?? '';
       this.setStars(stars);
-      this.setProgress(0.12);   // a little filled at the start of the mission
+      this.setProgress((messageNumber - 1) / messageTotal);
 
-      /* Build the message from tappable pieces (buttons, so keyboards and
-         screen readers can reach them too). */
-      el('message-text').replaceChildren(...(mission.message ?? []).map((piece, i) => {
-        const btn = make('button', 'msg-piece', piece.text);
+      /* One stepping tile per message; the ones already cleared are lit. */
+      el('path').replaceChildren(...Array.from({ length: messageTotal }, (_, i) => {
+        const tile = make('div', `tile${i < messageNumber - 1 ? ' lit' : ''}`);
+        return tile;
+      }));
+
+      /* Build the message from tappable parts (buttons, so keyboards and screen
+         readers can reach them too). */
+      el('message-text').replaceChildren(...(message.parts ?? []).map((part, i) => {
+        const btn = make('button', 'msg-piece', part.text);
         btn.type = 'button';
         btn.dataset.pieceIndex = String(i);
         return btn;
       }));
 
-      /* Everything starts hidden and calm… */
+      /* Everything starts hidden and calm. */
       el('stranger-bubble').classList.remove('show');
       el('stranger').classList.remove('in');
       aikoSay('');
@@ -239,22 +259,20 @@ export function createUI(t, handlers) {
 
       this.show('mission');
 
-      /* …then the moment plays: the stranger walks in, their message arrives,
-         Aiko wonders about it, and the hint dock slides up. */
+      /* Then the moment plays: the stranger walks in, their message arrives,
+         and the dock slides up with Aiko's question and the tap hint. */
       later(() => el('stranger').classList.add('in'), 300);
       later(() => el('stranger-bubble').classList.add('show'), 600);
-      later(() => aikoSay(mission.spot?.prompt ?? t('spotPrompt')), 1200);
       later(() => {
-        el('dock-hint').textContent = t('spotHint');
+        el('dock-hint').textContent = message.spot?.prompt ?? t('spotHint');
         dock.classList.add('up');
-      }, 1600);
+      }, 1200);
     },
 
     /**
-     * The child tapped a message piece. `say` is Aiko's response (computed by
-     * main.js from the piece); `promptText` is what her bubble returns to after
-     * a miss, so the goal is never lost. `canProceed` is true once every flag
-     * has been found.
+     * The child tapped a part of the message. `say` is Aiko's response (from the
+     * part); `promptText` is what the dock hint returns to after a miss, so the
+     * goal is never lost. `canProceed` is true once every flag has been found.
      */
     showSpotResult(index, flag, say, promptText, canProceed) {
       const btn = el('message-text').querySelector(`[data-piece-index="${index}"]`);
@@ -267,22 +285,23 @@ export function createUI(t, handlers) {
 
         if (canProceed) {
           /* Every flag found. Lock the rest of the message so the celebration
-             isn't interrupted, hold Aiko's cheer and her "found" line on
-             screen, and after a few seconds offer a friendly Keep going — the
-             child sets the pace and gets to enjoy the win. No auto-advance. */
-          this.setProgress(0.55);
+             is not interrupted, hold Aiko's cheer and her found line on screen,
+             and after a few seconds offer a friendly Keep going. The child sets
+             the pace and gets to enjoy the win. No auto-advance. */
+          this.setProgress((sceneN - 0.5) / sceneTotal);
           el('message-text').querySelectorAll('.msg-piece').forEach((p) => { p.disabled = true; });
           later(() => this.showKeepGoing(), 3000);
         }
       } else {
+        /* A harmless tap: Aiko's gentle line stays up at least 3 seconds so a
+           child can read it, then fades and the question returns. */
         setAiko('risky');
         aikoSay(say);
-        /* Gentle nudge over — back to the hunt. */
-        later(() => { setAiko('idle'); aikoSay(promptText); }, 2100);
+        later(() => { setAiko('idle'); el('dock-hint').textContent = promptText; aikoSay(''); }, 3200);
       }
     },
 
-    /** Reveal the "Keep going" button that moves Spot → Decide. */
+    /** Reveal the "Keep going" button that moves this message from Spot to Decide. */
     showKeepGoing() {
       const btn = el('spot-continue');
       btn.hidden = false;
@@ -295,15 +314,15 @@ export function createUI(t, handlers) {
       btn.classList.remove('show');
     },
 
-    /* ---------------- 5b. Mission — DECIDE ---------------- */
-    renderDecide(mission) {
+    /* ---------------- 5b. Mission, DECIDE ---------------- */
+    renderDecide(message) {
       clearSceneTimers();
       setAiko('idle');
       aikoSay('');
       this.hideKeepGoing();
 
-      el('dock-hint').textContent = mission.decide?.prompt ?? '';
-      el('choices').replaceChildren(...(mission.decide?.choices ?? []).map((choice) => {
+      el('dock-hint').textContent = message.decide?.prompt ?? '';
+      el('choices').replaceChildren(...(message.decide?.choices ?? []).map((choice) => {
         const item = document.createElement('li');
         item.style.display = 'contents';
         const card = make('button', 'choice-card');
@@ -320,9 +339,13 @@ export function createUI(t, handlers) {
       el('dock').classList.add('up');
     },
 
-    /* ---------------- 5c. Mission — REACT (after a Decide guess) ---------------- */
-    showAnswer(mission, choice, correct, isLastMission) {
+    /* ---------------- 5c. Mission, REACT (after a Decide guess) ----------------
+     * `takeaway` is the closing lesson, passed only on the final message's safe
+     * pick. The stranger's bubble is hidden here so Aiko's reply has full room.
+     */
+    showAnswer(choice, correct, isLastMessage, takeaway) {
       const picked = el('choices').querySelector(`[data-choice-id="${choice.id}"]`);
+      el('stranger-bubble').classList.remove('show');
 
       if (correct) {
         if (picked) picked.classList.add('safe-pick');
@@ -333,19 +356,20 @@ export function createUI(t, handlers) {
 
         setAiko('safe');
         aikoSay(choice.feedback ?? '');
-        this.setProgress(1);   // mission solved — bar full
+        this.setProgress(sceneN / sceneTotal);
+        el('path').children[sceneN - 1]?.classList.add('lit');
 
-        if (mission.react?.takeaway) {
-          el('takeaway-text').textContent = mission.react.takeaway;
+        if (takeaway) {
+          el('takeaway-text').textContent = takeaway;
           el('takeaway').hidden = false;
         }
         const next = el('next-btn');
-        next.textContent = isLastMission ? t('finish') : t('next');
+        next.textContent = isLastMessage ? t('finish') : t('next');
         el('feedback').hidden = false;
         next.focus();
       } else {
-        /* A tempting wrong pick: brief warm ring, then it dims and locks.
-           Aiko explains why and invites another try. */
+        /* A tempting wrong pick: brief amber ring, then it dims and locks. Aiko
+           explains why and invites another try. */
         if (picked) {
           picked.disabled = true;
           picked.classList.add('risk-pick');
@@ -357,16 +381,16 @@ export function createUI(t, handlers) {
     },
 
     /* ---------------- Topic complete: the big celebration ---------------- */
-    showComplete(score, total, parentNoteText) {
-      this.setScore(score);
+    showComplete(stars, total, parentNoteText) {
+      this.hideScore();
 
       el('star-row').replaceChildren(...Array.from({ length: total }, (_, i) => {
-        const star = make('span', `s${i < score ? ' on' : ''}`, '⭐');
+        const star = make('span', `s${i < stars ? ' on' : ''}`, '⭐');
         star.style.animationDelay = `${i * 0.16}s`;
         return star;
       }));
 
-      el('final-score').textContent = t('finalScore', { score, total });
+      el('final-score').textContent = t('finalScore', { score: stars, total });
       el('parent-note-text').textContent = parentNoteText ?? '';
 
       this.show('complete');

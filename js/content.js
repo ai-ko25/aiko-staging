@@ -1,4 +1,4 @@
-/* content.js — the librarian.
+/* content.js, the librarian.
  *
  * The only file that reads JSON. It fetches two kinds of file and checks each
  * one makes sense before handing it on:
@@ -46,7 +46,7 @@ export async function loadTopicMissions(topicId, lang) {
 }
 
 /* ------------------------------------------------------------------ *
- *  Validation — throws on problems that would break the game, warns on
+ *  Validation, throws on problems that would break the game, warns on
  *  problems that are probably mistakes but still playable.
  * ------------------------------------------------------------------ */
 
@@ -91,16 +91,21 @@ function validateMissions(data, path) {
     const where = `${path}: mission ${i + 1}`;
     if (!mission.id) throw new Error(`${where} has no "id".`);
 
-    validateMessage(mission, where);
-    validateDecide(mission, where);
-
-    /* Aiko's opening line for the Spot beat. Playable without it (there is a
-       generic fallback in strings), but a mission reads better with its own. */
-    if (!mission.spot || !mission.spot.prompt) {
-      console.warn(`[Aiko] ${where} ("${mission.id}") has no spot.prompt.`);
+    /* A mission is now a short conversation: a "messages" array, each entry one
+       message from the sender with its own tappable parts, spot, and decide. */
+    if (!Array.isArray(mission.messages) || mission.messages.length === 0) {
+      throw new Error(`${where} ("${mission.id}") needs a non-empty "messages" array.`);
     }
+    mission.messages.forEach((message, mi) => {
+      const mw = `${where} ("${mission.id}"), message ${mi + 1}`;
+      validateParts(message, mw);
+      validateDecide(message, mw);
+      if (!message.spot || !message.spot.prompt) {
+        console.warn(`[Aiko] ${mw} has no spot.prompt.`);
+      }
+    });
 
-    /* react.takeaway is the teaching line. Not fatal if missing, but flag it. */
+    /* react.takeaway is the closing teaching line. Not fatal, but flag it. */
     if (!mission.react || !mission.react.takeaway) {
       console.warn(`[Aiko] ${where} ("${mission.id}") has no react.takeaway.`);
     }
@@ -109,36 +114,36 @@ function validateMissions(data, path) {
   warnDuplicates(data.missions.map((m) => m.id), `${path}: mission ids`);
 }
 
-/* The scene IS the message: an array of pieces the child can tap. Pieces
+/* Each message's "parts" are the tappable pieces of the chat bubble. Parts
    marked "flag": true are the red flags to find. */
-function validateMessage(mission, where) {
-  if (!Array.isArray(mission.message) || mission.message.length === 0) {
-    throw new Error(`${where} ("${mission.id}") needs a non-empty "message" array.`);
+function validateParts(message, where) {
+  if (!Array.isArray(message.parts) || message.parts.length === 0) {
+    throw new Error(`${where} needs a non-empty "parts" array.`);
   }
-  mission.message.forEach((piece, k) => {
-    if (!piece.text) throw new Error(`${where} ("${mission.id}"), message piece ${k + 1} has no "text".`);
+  message.parts.forEach((part, k) => {
+    if (!part.text) throw new Error(`${where}, part ${k + 1} has no "text".`);
     /* A flag with no "found" line means Aiko has nothing to say when the child
-       finds it — the moment falls flat. */
-    if (piece.flag === true && !piece.found) {
-      console.warn(`[Aiko] ${where} ("${mission.id}") message piece ${k + 1} is a flag with no "found" line.`);
+       finds it, so the moment falls flat. */
+    if (part.flag === true && !part.found) {
+      console.warn(`[Aiko] ${where} part ${k + 1} is a flag with no "found" line.`);
     }
   });
-  if (!mission.message.some((p) => p.flag === true)) {
-    console.warn(`[Aiko] ${where} ("${mission.id}") message has no piece marked "flag": true.`);
+  if (!message.parts.some((p) => p.flag === true)) {
+    console.warn(`[Aiko] ${where} has no part marked "flag": true.`);
   }
 }
 
-function validateDecide(mission, where) {
-  const decide = mission.decide;
+function validateDecide(message, where) {
+  const decide = message.decide;
   if (!decide || !Array.isArray(decide.choices) || decide.choices.length < 2) {
-    throw new Error(`${where} ("${mission.id}") needs "decide.choices" with at least two choices.`);
+    throw new Error(`${where} needs "decide.choices" with at least two choices.`);
   }
   decide.choices.forEach((c, k) => {
-    if (!c.id) throw new Error(`${where} ("${mission.id}"), decide choice ${k + 1} has no "id".`);
-    if (!c.text) throw new Error(`${where} ("${mission.id}"), decide choice "${c.id}" has no "text".`);
+    if (!c.id) throw new Error(`${where}, decide choice ${k + 1} has no "id".`);
+    if (!c.text) throw new Error(`${where}, decide choice "${c.id}" has no "text".`);
   });
   if (decide.choices.filter((c) => c.correct === true).length !== 1) {
-    console.warn(`[Aiko] ${where} ("${mission.id}") decide should have exactly one "correct": true choice.`);
+    console.warn(`[Aiko] ${where} decide should have exactly one "correct": true choice.`);
   }
 }
 
@@ -150,7 +155,7 @@ function warnDuplicates(ids, label) {
 }
 
 /* ------------------------------------------------------------------ *
- *  Cross-language parity — a development aid, never blocks the game.
+ *  Cross-language parity, a development aid, never blocks the game.
  *  Open the console and you learn the day English and Arabic drift apart,
  *  instead of a month later.
  * ------------------------------------------------------------------ */
@@ -204,21 +209,30 @@ export async function checkContent() {
           const twin = om.missions.find((m) => m.id === mission.id);
           if (!twin) continue;
 
-          /* Message pieces have no ids — they line up by position. A different
-             piece count or different flag positions means the two languages
-             would play differently (e.g. a flag findable in English but not
-             in Arabic). */
-          const refFlags = flagPositions(mission.message);
-          const twinFlags = flagPositions(twin.message);
-          if (refFlags !== twinFlags) {
-            console.warn(
-              `[Aiko] ${topic.missions}: mission "${mission.id}" message flags differ — ` +
-              `${refM.lang} [${refFlags}] vs ${om.lang} [${twinFlags}].`
-            );
-          }
+          const refMsgs = mission.messages ?? [];
+          const twinMsgs = twin.messages ?? [];
+          compareIdLists(refMsgs.map((m) => m.id), twinMsgs.map((m) => m.id),
+            `messages in "${mission.id}"`, refM.lang, om.lang, topic.missions);
 
-          compareIdLists(sortedIds(mission.decide?.choices), sortedIds(twin.decide?.choices),
-            `decide choices in "${mission.id}"`, refM.lang, om.lang, topic.missions);
+          /* Parts have no ids, so they line up by position. Different part
+             counts or flag positions would let the two languages play
+             differently (a flag findable in one language but not the other).
+             Choice ids must match per message too. */
+          refMsgs.forEach((message) => {
+            const twinMessage = twinMsgs.find((m) => m.id === message.id);
+            if (!twinMessage) return;
+
+            const refFlags = flagPositions(message.parts);
+            const twinFlags = flagPositions(twinMessage.parts);
+            if (refFlags !== twinFlags) {
+              console.warn(
+                `[Aiko] ${topic.missions}: "${mission.id}" / "${message.id}" flag positions differ: ` +
+                `${refM.lang} [${refFlags}] vs ${om.lang} [${twinFlags}].`
+              );
+            }
+            compareIdLists(sortedIds(message.decide?.choices), sortedIds(twinMessage.decide?.choices),
+              `decide choices in "${mission.id}" / "${message.id}"`, refM.lang, om.lang, topic.missions);
+          });
         }
       }
     }
@@ -239,7 +253,7 @@ const regionIds = (worldFile) => worldFile.world.regions.map((r) => r.id);
 const topicIds = (region) => (region.topics ?? []).map((t) => t.id);
 const sortedIds = (list) => (list ?? []).map((x) => x.id).sort();
 
-/* "0:plain, 1:FLAG, 2:plain" — a positional fingerprint of a message. */
+/* "0:plain, 1:FLAG, 2:plain", a positional fingerprint of a message. */
 const flagPositions = (message) =>
   (message ?? []).map((p, i) => (p.flag === true ? `${i}:FLAG` : `${i}:plain`)).join(', ');
 

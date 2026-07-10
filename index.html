@@ -50,7 +50,7 @@
         <code class="error-hint">python3 serve.py</code>
       </section>
 
-      <!-- 1. OPEN — Aiko greets the child. -->
+      <!-- 1. OPEN, Aiko greets the child. -->
       <section class="panel panel-center" id="open-screen" hidden>
         <figure class="aiko aiko-lg">
           <img class="aiko-img" src="assets/aiko/idle.png" alt="">
@@ -60,14 +60,14 @@
         <button type="button" class="btn btn-primary" id="enter-btn" data-i18n="enter"></button>
       </section>
 
-      <!-- 2. WORLD MAP — the four regions (cards built by ui.js). -->
+      <!-- 2. WORLD MAP, the four regions (cards built by ui.js). -->
       <section class="panel" id="world-screen" hidden>
         <h1 class="panel-title" data-i18n="worldTitle"></h1>
         <p class="panel-body" data-i18n="worldSubtitle"></p>
         <div class="card-grid" id="region-grid"></div>
       </section>
 
-      <!-- 3. REGION — its topics (cards built by ui.js). -->
+      <!-- 3. REGION, its topics (cards built by ui.js). -->
       <section class="panel" id="region-screen" hidden>
         <button type="button" class="back-link" id="region-back" data-i18n="back"></button>
         <h1 class="panel-title" id="region-title"></h1>
@@ -75,7 +75,7 @@
         <div class="card-grid" id="topic-grid"></div>
       </section>
 
-      <!-- 4. TOPIC — its missions (cards built by ui.js). -->
+      <!-- 4. TOPIC, its missions (cards built by ui.js). -->
       <section class="panel" id="topic-screen" hidden>
         <button type="button" class="back-link" id="topic-back" data-i18n="back"></button>
         <h1 class="panel-title" id="topic-title"></h1>
@@ -83,31 +83,45 @@
         <ul class="mission-list" id="mission-list"></ul>
       </section>
 
-      <!-- 5. MISSION — the scene plays: the message arrives, the child taps the
+      <!-- 5. MISSION, the scene plays: the message arrives, the child taps the
            red flags in it (SPOT), picks the safe move (DECIDE), Aiko reacts and
            teaches (REACT). ui.js drives everything inside the frame. -->
       <section class="panel panel-scene" id="mission-screen" hidden>
         <button type="button" class="back-link" id="mission-back" data-i18n="back"></button>
 
         <div class="scene-frame">
-          <!-- HUD: one clean row — setting chip · progress bar · stars. It is a
-               real flex row above the stage, so nothing below can overlap it. -->
+          <div class="sun" aria-hidden="true"></div>
+
+          <!-- HUD: setting chip and stars, floating over the top of the scene
+               (copied from the runner). The progress bar is its own strip just
+               below, filling as each message is cleared. -->
           <div class="scene-hud">
             <span class="scene-chip" id="scene-setting"></span>
-            <div class="scene-progress" aria-hidden="true"><i id="progress-fill"></i></div>
             <span class="scene-chip scene-stars">⭐ <span id="star-count">0</span></span>
           </div>
+          <div class="scene-progress" aria-hidden="true"><i id="progress-fill"></i></div>
 
           <div class="scene-stage">
-            <!-- Atmosphere: soft layered hills and a ground strip, so the moment
-                 sits in a little daylit place instead of empty space. -->
+            <!-- Atmosphere: soft layered hills, floating motes, a ground strip,
+                 and stepping tiles that light up as the conversation advances. -->
             <div class="layer hills-far" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="layer hills-near" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="mote" style="inset-inline-start:18%;inset-block-start:22%;animation-duration:4s" aria-hidden="true"></span>
+            <span class="mote" style="inset-inline-start:64%;inset-block-start:16%;animation-duration:5s;animation-delay:1s" aria-hidden="true"></span>
+            <span class="mote" style="inset-inline-start:40%;inset-block-start:34%;animation-duration:4.5s;animation-delay:.6s" aria-hidden="true"></span>
+            <span class="mote" style="inset-inline-start:80%;inset-block-start:40%;animation-duration:5.5s;animation-delay:1.4s" aria-hidden="true"></span>
             <div class="scene-ground" aria-hidden="true"></div>
+            <div class="path" id="path" aria-hidden="true"></div>
+
+            <!-- Aiko floats just above the kid, glowing, standing in the scene.
+                 ui.js swaps her image and toggles cheer / worried as she reacts. -->
+            <div class="scene-aiko-glow" aria-hidden="true"></div>
+            <figure class="scene-aiko" id="aiko-figure">
+              <img class="aiko-img" id="aiko-img" src="assets/aiko/idle.png" alt="">
+            </figure>
 
             <!-- Characters stand ON the ground. The kid is you; the stranger
-                 slides in from the side when their message arrives; Aiko floats
-                 just above the kid as her guardian. -->
+                 slides in from the side when their message arrives. -->
             <svg class="kid" viewBox="0 0 90 110" aria-hidden="true">
               <defs><linearGradient id="kidShirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3FD39B"/><stop offset="1" stop-color="#1D9E75"/></linearGradient></defs>
               <ellipse cx="45" cy="106" rx="22" ry="5" fill="rgba(40,30,80,.18)"/>
@@ -131,13 +145,8 @@
               <text x="45" y="32" font-size="13" text-anchor="middle" fill="#3a3650" font-family="Arial" font-weight="bold">?</text>
             </svg>
 
-            <!-- ui.js swaps this image and toggles is-safe / is-risky to react. -->
-            <figure class="aiko scene-aiko" id="aiko-figure">
-              <img class="aiko-img" id="aiko-img" src="assets/aiko/idle.png" alt="">
-            </figure>
-
-            <!-- Bubbles live in the TOP zone, opposite sides, staggered — they
-                 never reach the characters below or the HUD above. -->
+            <!-- Bubbles: the stranger's message (white, top end-side) and Aiko's
+                 own reply (purple, start-side), each with a tail, like the runner. -->
             <div class="bubble bubble-stranger" id="stranger-bubble">
               <small id="sender-label"></small>
               <span class="bubble-msg" id="message-text"></span>
@@ -151,7 +160,7 @@
           <div class="dock" id="dock">
             <p class="dock-hint" id="dock-hint"></p>
             <ul class="dock-choices" id="choices"></ul>
-            <!-- Appears a few seconds after the last flag is found — the child
+            <!-- Appears a few seconds after the last flag is found, so the child
                  sets the pace and gets to enjoy the win first. -->
             <button type="button" class="btn keep-going" id="spot-continue" data-i18n="keepGoing" hidden></button>
             <div class="dock-after" id="feedback" hidden>
@@ -165,7 +174,7 @@
         </div>
       </section>
 
-      <!-- Topic finished — the big celebration: confetti, glow, stars, and a
+      <!-- Topic finished, the big celebration: confetti, glow, stars, and a
            note for the grown-ups. -->
       <section class="panel panel-center" id="complete-screen" hidden>
         <figure class="aiko aiko-lg is-safe aiko-celebrate">

@@ -1,10 +1,10 @@
-/* i18n.js — everything to do with language.
+/* i18n.js, everything to do with language.
  *
  * Decides which language to show, loads that language's interface labels,
  * flips the page to right-to-left for Arabic, and hands out a small `t()`
  * function that turns a label name into a sentence.
  *
- * "i18n" is the usual shorthand for "internationalisation" — i, 18 letters, n.
+ * "i18n" is the usual shorthand for "internationalisation", i, 18 letters, n.
  */
 
 export const SUPPORTED_LANGS = ['en', 'ar'];
@@ -55,7 +55,7 @@ export async function loadStrings(lang) {
 
 /**
  * Tell the browser what language this page is in, and which way it reads.
- * Arabic sets dir="rtl", which mirrors the entire layout — the CSS is written
+ * Arabic sets dir="rtl", which mirrors the entire layout, the CSS is written
  * with logical properties so this needs no extra styling.
  */
 export function applyDocumentLanguage(strings) {

@@ -1,4 +1,4 @@
-/* game.css — how Aiko's specific pieces look: the cards, the choice buttons,
+/* game.css, how Aiko's specific pieces look: the cards, the choice buttons,
    the feedback panel. Uses only the names defined in theme.css. */
 
 #app {
@@ -113,9 +113,9 @@
   text-align: center;
 }
 
-/* ---------- The mission scene ---------- */
+/* ---------- The mission scene (ported from aiko-concept-runner-4.html) ---------- */
 
-/* The mission screen is not a document card — it's a phone-style frame sitting
+/* The mission screen is not a document card, it is a phone-style frame sitting
    on the page, so we strip the panel chrome and just centre the frame. */
 .panel-scene {
   padding: var(--sp-3);
@@ -125,225 +125,313 @@
 }
 
 .panel-scene .back-link {
-  max-width: 460px;
+  max-width: 440px;
   margin: 0 auto var(--sp-2);
 }
 
-/* A tall phone-style frame: soft purple sky, centred on desktop, full-width on
-   a small screen. A column of three rows — HUD, stage, dock — that never
-   overlap because each is a real flex row. */
+/* The runner's phone frame: tall and generous, soft purple sky top to bottom,
+   centred on desktop, full-width on a small screen. HUD floats on top, the
+   stage fills the middle, the dock is a bottom sheet. */
 .scene-frame {
   position: relative;
   width: 100%;
-  max-width: 460px;
+  max-width: 440px;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
-  height: min(84vh, 720px);
+  height: min(88vh, 880px);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: linear-gradient(180deg, var(--c-sky-top) 0%, var(--c-sky-mid) 46%, var(--c-sky-bot) 74%);
-  box-shadow: 0 24px 70px rgba(38, 33, 92, 0.4);
+  background: linear-gradient(180deg, var(--c-sky-top) 0%, var(--c-sky-mid) 45%, var(--c-sky-bot) 72%);
+  box-shadow: 0 30px 90px rgba(38, 33, 92, 0.45);
 }
 
-/* Row 1: HUD — setting chip · progress bar · stars, one clean row. */
+/* Soft sun glow in the top end-corner (runner .sun). */
+.sun {
+  position: absolute;
+  inset-block-start: -60px;
+  inset-inline-end: -40px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 220, 150, 0.55), rgba(255, 220, 150, 0) 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* HUD floating over the scene (runner .hud): setting chip start-side, stars end-side. */
 .scene-hud {
-  flex: none;
-  position: relative;
-  z-index: 10;
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 30;
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-4);
+  justify-content: space-between;
+  padding: 15px 18px 10px;
 }
 
 .scene-chip {
-  flex: none;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--size-sm);
+  font-size: 13px;
   color: var(--c-primary-dark);
-  background: rgba(255, 255, 255, 0.85);
-  padding: var(--sp-1) var(--sp-3);
-  border-radius: 999px;
-  box-shadow: 0 3px 10px rgba(38, 33, 92, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+  padding: 6px 14px;
+  border-radius: 22px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 3px 10px rgba(60, 52, 137, 0.14);
   white-space: nowrap;
 }
 
 .scene-stars {
-  color: var(--c-accent);
-  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 800;
+  font-size: 15px;
+  color: #d98a16;
 }
 
-/* The progress bar takes the middle of the HUD row and fills as beats clear. */
+/* Its own thin strip just under the HUD (runner .hud-progress), filling as each
+   message of the conversation is cleared. */
 .scene-progress {
-  flex: 1;
-  height: 8px;
+  position: absolute;
+  inset-block-start: 48px;
+  inset-inline: 18px;
+  height: 7px;
   background: rgba(255, 255, 255, 0.55);
-  border-radius: 999px;
+  border-radius: 7px;
   overflow: hidden;
+  z-index: 30;
 }
 .scene-progress i {
   display: block;
   height: 100%;
   width: 0;
-  border-radius: 999px;
+  border-radius: 7px;
   background: linear-gradient(90deg, var(--c-correct-bright), var(--c-correct));
-  box-shadow: 0 0 10px rgba(63, 211, 155, 0.55);
+  box-shadow: 0 0 10px rgba(63, 211, 155, 0.6);
   transition: width 0.6s cubic-bezier(0.4, 1.3, 0.5, 1);
 }
 
-/* ---------- Row 2: the stage — atmosphere, characters, bubbles ---------- */
-
-/* Clips its own contents, so nothing here can escape into the HUD or spill out
-   of the frame. Bubbles live in its TOP zone; characters stand at the bottom. */
+/* The stage fills the frame and clips its contents (runner .scene). */
 .scene-stage {
   position: relative;
   flex: 1;
-  min-height: 340px;
   overflow: hidden;
+  z-index: 2;
 }
 
-/* Soft layered hills. */
+/* Soft layered hills (runner .hills-far / .hills-near + .blob). */
 .layer {
   position: absolute;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   pointer-events: none;
-  z-index: 1;
 }
 .layer span {
   position: absolute;
-  bottom: 0;
+  inset-block-end: 0;
   border-radius: 50% 50% 0 0;
 }
-.hills-far  { bottom: 96px; height: 160px; }
-.hills-near { bottom: 74px; height: 130px; }
-.hills-far span  { background: rgba(255, 255, 255, 0.22); }
+.hills-far  { inset-block-end: 150px; height: 200px; }
+.hills-near { inset-block-end: 120px; height: 150px; }
+.hills-far span  { background: rgba(255, 255, 255, 0.18); }
 .hills-near span { background: rgba(127, 119, 221, 0.22); }
-.hills-far  span:nth-child(1) { width: 62%; height: 160px; left: -12%; }
-.hills-far  span:nth-child(2) { width: 56%; height: 130px; left: 42%; }
-.hills-far  span:nth-child(3) { width: 52%; height: 150px; left: 80%; }
-.hills-near span:nth-child(1) { width: 56%; height: 130px; left: -14%; }
-.hills-near span:nth-child(2) { width: 62%; height: 145px; left: 38%; }
-.hills-near span:nth-child(3) { width: 46%; height: 120px; left: 82%; }
+.hills-far  span:nth-child(1) { width: 300px; height: 160px; inset-inline-start: -60px; }
+.hills-far  span:nth-child(2) { width: 260px; height: 130px; inset-inline-start: 150px; }
+.hills-far  span:nth-child(3) { width: 300px; height: 170px; inset-inline-start: 320px; }
+.hills-near span:nth-child(1) { width: 240px; height: 130px; inset-inline-start: -40px; }
+.hills-near span:nth-child(2) { width: 280px; height: 150px; inset-inline-start: 150px; }
+.hills-near span:nth-child(3) { width: 240px; height: 130px; inset-inline-start: 320px; }
 
+/* Floating dust motes (runner .mote). */
+.mote {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-mote);
+  opacity: 0.55;
+  z-index: 3;
+  animation: mote-float linear infinite;
+}
+@keyframes mote-float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50%      { transform: translateY(-24px) translateX(12px); }
+}
+
+/* The ground the characters stand on (runner .ground). */
 .scene-ground {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 92px;
-  z-index: 1;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 150px;
+  z-index: 4;
   background: linear-gradient(180deg, var(--c-ground), var(--c-ground-dark));
   border-start-start-radius: 50% 30px;
   border-start-end-radius: 50% 30px;
   box-shadow: inset 0 5px 14px rgba(255, 255, 255, 0.18);
 }
 
+/* Stepping tiles, one per message, lit as the conversation advances (runner .path/.tile). */
+.path {
+  position: absolute;
+  inset-block-end: 84px;
+  inset-inline: 0;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  z-index: 6;
+}
+.tile {
+  width: 34px;
+  height: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.45);
+  transition: all 0.45s ease;
+}
+.tile.lit {
+  background: var(--c-correct-bright);
+  box-shadow: 0 0 14px var(--c-correct-bright);
+  transform: translateY(-2px);
+}
+
 /* ---------- Characters on the ground ---------- */
 
+/* You (runner .kid). */
 .kid {
   position: absolute;
-  inset-block-end: 74px;
-  inset-inline-start: 16%;
-  width: 74px;
-  z-index: 3;
+  inset-block-end: 104px;
+  inset-inline-start: 60px;
+  width: 80px;
+  z-index: 10;
   filter: drop-shadow(0 6px 6px rgba(60, 40, 110, 0.25));
 }
 
-/* The stranger waits off-side, then slides in when their message arrives. */
+/* The stranger waits off-side, then slides in (runner .stranger-svg). */
 .stranger {
   position: absolute;
-  inset-block-end: 74px;
+  inset-block-end: 104px;
   inset-inline-end: -100px;
-  width: 64px;
-  z-index: 2;
+  width: 74px;
+  z-index: 9;
   filter: drop-shadow(0 6px 6px rgba(40, 30, 80, 0.25));
   transition: inset-inline-end 0.7s cubic-bezier(0.4, 1.1, 0.5, 1);
 }
-.stranger.in { inset-inline-end: 12%; }
+.stranger.in { inset-inline-end: 20px; }
 
-/* Aiko floats just above the kid, her glow intact (from the .aiko rules). */
+/* Aiko, the guardian floating above the kid (runner .aiko-wrap + .aiko-glow).
+   She is clearly in the scene at a good size, glowing, and her image swaps
+   (idle / safe / worried) while cheer / worried tune the glow and the motion. */
 .scene-aiko {
   position: absolute;
-  inset-block-end: 118px;
-  inset-inline-start: 6%;
+  inset-block-end: 176px;
+  inset-inline-start: 40px;
+  width: 116px;
   margin: 0;
-  z-index: 4;
+  z-index: 20;
 }
 .scene-aiko .aiko-img {
-  width: clamp(104px, 27vw, 128px);
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 0 18px rgba(239, 159, 39, 0.5));
+  animation: scene-aiko-hover 3.4s ease-in-out infinite;
+  transition: filter 0.4s ease, transform 0.3s ease;
+}
+.scene-aiko.cheer .aiko-img {
+  filter: drop-shadow(0 0 26px rgba(63, 211, 155, 0.75));
+  animation: scene-aiko-pop 0.5s cubic-bezier(0.3, 1.6, 0.4, 1), scene-aiko-hover 3.4s ease-in-out infinite 0.5s;
+}
+.scene-aiko.worried .aiko-img {
+  filter: drop-shadow(0 0 16px rgba(242, 153, 74, 0.55));
+  animation: scene-aiko-wobble 0.5s ease-in-out, scene-aiko-hover 3.4s ease-in-out infinite 0.5s;
 }
 
-/* ---------- Speech bubbles (top zone, opposite sides, staggered) ---------- */
+.scene-aiko-glow {
+  position: absolute;
+  inset-block-end: 168px;
+  inset-inline-start: 40px;
+  width: 116px;
+  height: 52px;
+  z-index: 19;
+  pointer-events: none;
+  background: radial-gradient(ellipse, rgba(255, 210, 140, 0.5), transparent 70%);
+  filter: blur(4px);
+  animation: scene-aiko-pulse 3.4s ease-in-out infinite;
+}
+
+@keyframes scene-aiko-hover  { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-13px); } }
+@keyframes scene-aiko-pop    { 0% { transform: scale(1); } 45% { transform: scale(1.14); } 100% { transform: scale(1); } }
+@keyframes scene-aiko-wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+@keyframes scene-aiko-pulse  { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.1); } }
+
+/* ---------- Speech bubbles (runner .bubble) ---------- */
 
 .bubble {
   position: absolute;
-  z-index: 8;
-  max-width: 60%;
-  padding: var(--sp-3) var(--sp-4);
+  z-index: 25;
+  max-width: 215px;
+  padding: 12px 16px;
   border-radius: 20px;
-  font-weight: 600;
-  font-size: var(--size-sm);
-  line-height: 1.4;
+  font-weight: 700;
+  font-size: 14.5px;
+  line-height: 1.34;
   opacity: 0;
-  translate: 0 10px;
-  transition: opacity 0.32s ease, translate 0.32s ease;
+  transform: translateY(10px) scale(0.95);
+  transition: opacity 0.32s ease, transform 0.32s ease;
   pointer-events: none;
 }
-
 .bubble.show {
   opacity: 1;
-  translate: 0 0;
+  transform: none;
   pointer-events: auto;
 }
 
-/* The stranger's message: white, top end-side, tail pointing down toward them. */
+/* The stranger's message: white, end-side, tail pointing down toward them. */
 .bubble-stranger {
   background: var(--c-surface);
   color: var(--c-ink);
-  inset-block-start: var(--sp-3);
-  inset-inline-end: var(--sp-3);
+  inset-inline-end: 18px;
+  inset-block-start: 92px;
+  box-shadow: 0 10px 28px rgba(60, 52, 137, 0.2);
   border-end-end-radius: 6px;
-  box-shadow: 0 10px 28px rgba(38, 33, 92, 0.18);
 }
 .bubble-stranger::after {
   content: "";
   position: absolute;
-  bottom: -9px;
-  inset-inline-end: 22px;
+  inset-block-end: -9px;
+  inset-inline-end: 26px;
   border: 9px solid transparent;
   border-block-start-color: var(--c-surface);
   border-block-end: 0;
 }
-
 .bubble-stranger small {
   display: block;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--c-ink-soft);
-  margin-block-end: var(--sp-1);
+  opacity: 0.7;
+  margin-block-end: 3px;
 }
 
-/* Aiko's bubble: brand purple, start-side, staggered well below the stranger's
-   so the two never meet. Tail points down toward Aiko. */
+/* Aiko's reply: purple gradient, start-side, tail pointing down toward her. */
 .bubble-aiko {
   background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
   color: #fff;
-  inset-block-start: 132px;
-  inset-inline-start: var(--sp-3);
+  inset-inline-start: 16px;
+  inset-block-start: 60px;
+  box-shadow: 0 12px 30px rgba(60, 52, 137, 0.34);
   border-end-start-radius: 6px;
-  box-shadow: 0 12px 30px rgba(38, 33, 92, 0.3);
 }
 .bubble-aiko::after {
   content: "";
   position: absolute;
-  bottom: -9px;
-  inset-inline-start: 26px;
+  inset-block-end: -9px;
+  inset-inline-start: 30px;
   border: 9px solid transparent;
   border-block-start-color: var(--c-primary-dark);
   border-block-end: 0;
@@ -413,11 +501,11 @@
   align-items: center;
   gap: var(--sp-2);
   background: var(--c-surface);
-  border: 2px solid var(--c-border);
-  border-radius: var(--radius);
-  padding: var(--sp-3) var(--sp-2);
+  border: 2.5px solid var(--c-border);
+  border-radius: 22px;
+  padding: 15px 10px 13px;
   text-align: center;
-  box-shadow: 0 5px 16px rgba(38, 33, 92, 0.09);
+  box-shadow: 0 5px 16px rgba(60, 52, 137, 0.09);
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
 }
 
@@ -427,33 +515,34 @@
 }
 
 .choice-ic {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   display: grid;
   place-items: center;
-  font-size: 24px;
+  font-size: 28px;
   background: var(--c-bg);
 }
 
 .choice-lb {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--size-sm);
+  font-size: 14px;
   color: var(--c-ink);
   line-height: 1.25;
 }
 
-/* Set by ui.js when a card is picked. */
+/* Set by ui.js when a card is picked. Safe glows green (runner .safe-pick),
+   the tempting wrong pick glows amber (runner .risk-pick). */
 .choice-card.safe-pick {
   border-color: var(--c-correct);
-  box-shadow: 0 0 0 4px rgba(29, 158, 117, 0.18);
+  box-shadow: 0 0 0 4px rgba(63, 211, 155, 0.22);
 }
-.choice-card.safe-pick .choice-ic { background: var(--c-correct-soft); }
+.choice-card.safe-pick .choice-ic { background: rgba(63, 211, 155, 0.18); }
 
 .choice-card.risk-pick {
-  border-color: var(--c-wrong);
-  box-shadow: 0 0 0 4px rgba(217, 105, 76, 0.2);
+  border-color: var(--c-risk-ring);
+  box-shadow: 0 0 0 4px rgba(242, 153, 74, 0.2);
 }
 
 .choice-card.dim {
@@ -506,7 +595,7 @@
 
 .btn {
   padding: var(--sp-3) var(--sp-6);
-  border-radius: 999px;              /* full pill — friendly, not form-like */
+  border-radius: 999px;              /* full pill, friendly, not form-like */
   font-family: var(--font-display);
   font-weight: 600;
   font-size: var(--size-md);
@@ -589,7 +678,7 @@
   animation: aiko-pop 0.45s ease;
 }
 
-/* Risky choice: Aiko dims and shrinks back a touch — worried, never scary. */
+/* Risky choice: Aiko dims and shrinks back a touch, worried, never scary. */
 .aiko.is-risky {
   --glow: 0.3;
 }

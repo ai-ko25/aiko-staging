@@ -7,50 +7,36 @@
       "title": "Words That Sting",
       "setting": "🎨 Art App",
       "sender": "comments on your drawing",
-      "message": [
+      "messages": [
         {
-          "text": "Wow, the colours in this are amazing! ",
-          "hint": "That one's kind — honest, friendly feedback feels good. Keep looking…"
-        },
-        {
-          "text": "This is the worst thing I've ever seen. Give up.",
-          "flag": true,
-          "found": "That's it. Words meant to hurt you are a red flag — that's cruelty, not feedback. 🚩"
+          "id": "cruel",
+          "parts": [
+            { "text": "Wow, the colours in this are amazing! ",
+              "hint": "That one's kind. Honest, friendly feedback feels good. Keep looking." },
+            { "text": "This is the worst thing I've ever seen. Give up.",
+              "flag": true,
+              "found": "That's it. Words meant to hurt you are a red flag, that's cruelty, not feedback. 🚩" }
+          ],
+          "spot": {
+            "prompt": "Two comments just came in on your drawing. One of them isn't okay, can you tap it?",
+            "missHint": "Look for the words that are trying to hurt, not help."
+          },
+          "decide": {
+            "prompt": "What should we do about the cruel one?",
+            "choices": [
+              { "id": "fight-back", "icon": "🔥", "text": "Write something meaner back", "correct": false,
+                "feedback": "It's so tempting when you're hurt. But it usually makes things worse, and now there's something unkind with your name on it too." },
+              { "id": "block-report", "icon": "🛡️", "text": "Screenshot, block, tell a grown-up", "correct": true,
+                "feedback": "Perfect. Saving proof, blocking, and telling someone are exactly the three steps. You don't have to handle it alone." },
+              { "id": "delete-quietly", "icon": "🗑️", "text": "Delete my drawing forever", "correct": false,
+                "feedback": "Your drawing wasn't the problem, their unkindness was. You shouldn't have to disappear because someone else behaved badly." }
+            ]
+          },
+          "parentTag": "what to do when comments turn cruel"
         }
       ],
-      "spot": {
-        "prompt": "Two comments just came in on your drawing. One of them isn't okay — can you tap it?",
-        "missHint": "Look for the words that are trying to hurt, not help."
-      },
-      "decide": {
-        "prompt": "What should we do about the cruel one?",
-        "choices": [
-          {
-            "id": "fight-back",
-            "icon": "🔥",
-            "text": "Write something meaner back",
-            "correct": false,
-            "feedback": "It's so tempting when you're hurt. But it usually makes things worse, and now there's something unkind with your name on it too."
-          },
-          {
-            "id": "block-report",
-            "icon": "🛡️",
-            "text": "Screenshot, block, tell a grown-up",
-            "correct": true,
-            "feedback": "Perfect. Saving proof, blocking, and telling someone are exactly the three steps. You don't have to handle it alone."
-          },
-          {
-            "id": "delete-quietly",
-            "icon": "🗑️",
-            "text": "Delete my drawing forever",
-            "correct": false,
-            "feedback": "Your drawing wasn't the problem — their unkindness was. You shouldn't have to disappear because someone else behaved badly."
-          }
-        ]
-      },
       "react": {
-        "takeaway": "Save it, block them, tell someone. Being unkind online is never your fault.",
-        "parentTag": "what to do when comments turn cruel"
+        "takeaway": "Save it, block them, tell someone. Being unkind online is never your fault."
       }
     }
   ]

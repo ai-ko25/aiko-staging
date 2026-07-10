@@ -7,50 +7,82 @@
       "title": "A Message From Someone New",
       "setting": "🎮 Game Chat",
       "sender": "someone online",
-      "message": [
+      "messages": [
         {
-          "text": "Hey! You're really good at this. ",
-          "hint": "A kind word on its own is fine. Look at what they're asking for…"
+          "id": "age",
+          "parts": [
+            { "text": "hey! you're so good at this game 😄 ",
+              "hint": "That part is just being friendly. Look at what they ask you next." },
+            { "text": "how old are you?",
+              "flag": true,
+              "found": "Nice eye! Asking your age is a red flag. 🚩" }
+          ],
+          "spot": {
+            "prompt": "Someone we don't know sent a message. Something in it isn't safe to answer, can you tap it?",
+            "missHint": "Hmm, look again, what feels a bit too personal, or pushy?"
+          },
+          "decide": {
+            "prompt": "Great spotting! Now, what should we do about it?",
+            "choices": [
+              { "id": "safe", "icon": "🛡️", "text": "Keep it private", "correct": true,
+                "feedback": "Nice, you kept your age to yourself!" },
+              { "id": "risk", "icon": "💬", "text": "Tell my age", "correct": false,
+                "feedback": "Your age is private. Someone you just met online doesn't need it." }
+            ]
+          },
+          "parentTag": "asking personal info like your age"
         },
         {
-          "text": "What school do you go to?",
-          "flag": true,
-          "found": "Nice eye! Asking about your school is a red flag. 🚩"
+          "id": "home-alone",
+          "parts": [
+            { "text": "cool! ",
+              "hint": "That word is just friendly. Look at the question right after it." },
+            { "text": "are your mum and dad home right now?",
+              "flag": true,
+              "found": "Exactly! Asking if you're home alone is a red flag. 🚩" }
+          ],
+          "spot": {
+            "prompt": "Here's another message. Tap the part that feels off. 🔍",
+            "missHint": "Look again, which part is a stranger not supposed to know?"
+          },
+          "decide": {
+            "prompt": "Good catch! So what do we do here?",
+            "choices": [
+              { "id": "risk", "icon": "🏠", "text": "I'm home alone", "correct": false,
+                "feedback": "Whether you're home alone is private. A stranger never needs to know that." },
+              { "id": "safe", "icon": "🙅", "text": "Don't answer", "correct": true,
+                "feedback": "Great, you didn't say who's home!" }
+            ]
+          },
+          "parentTag": "asking whether you're home alone"
+        },
+        {
+          "id": "secret",
+          "parts": [
+            { "text": "i'll send you free stuff! ",
+              "hint": "Free stuff sounds fun, but read the next part carefully." },
+            { "text": "just don't tell your parents 🤫",
+              "flag": true,
+              "found": "Yes! Being asked to keep a secret is a big red flag. 🚩" }
+          ],
+          "spot": {
+            "prompt": "Ooh, free stuff! But there's a big red flag hiding here. Spot it!",
+            "missHint": "Look for the part that asks you to hide something from a grown-up."
+          },
+          "decide": {
+            "prompt": "You spotted it! Now, what should we do?",
+            "choices": [
+              { "id": "safe", "icon": "🗣️", "text": "Tell a grown-up", "correct": true,
+                "feedback": "Yes, no secrets from your grown-ups!" },
+              { "id": "risk", "icon": "🤐", "text": "Keep the secret", "correct": false,
+                "feedback": "Being asked to keep a secret from your parents is a big red flag. Always tell a grown-up you trust." }
+            ]
+          },
+          "parentTag": "asking you to keep a secret from parents"
         }
       ],
-      "spot": {
-        "prompt": "Someone we don't know just sent this. Something in it isn't safe to answer — can you tap it?",
-        "missHint": "Hmm, look again — which part feels a bit too personal, or pushy?"
-      },
-      "decide": {
-        "prompt": "Now — what should we do about it?",
-        "choices": [
-          {
-            "id": "tell-them",
-            "icon": "🏫",
-            "text": "Tell them my school",
-            "correct": false,
-            "feedback": "Careful! Your school is a big clue about where to find you in real life. That's not something to share with someone you only know online."
-          },
-          {
-            "id": "tell-adult",
-            "icon": "🗣️",
-            "text": "Don't answer — tell a grown-up I trust",
-            "correct": true,
-            "feedback": "Great choice! Telling a trusted adult is always safe — and you are never in trouble for asking for help."
-          },
-          {
-            "id": "swap-info",
-            "icon": "🔄",
-            "text": "Ask what school THEY go to",
-            "correct": false,
-            "feedback": "It feels fair to swap, but you still can't be sure who is really typing. It's safer not to trade personal details at all."
-          }
-        ]
-      },
       "react": {
-        "takeaway": "Where you go to school is private information, even if the person seems friendly.",
-        "parentTag": "asking where you go to school"
+        "takeaway": "A stranger online doesn't need your age, whether you're home, or your secrets. When something feels off, tell a grown-up you trust."
       }
     }
   ]

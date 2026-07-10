@@ -1,4 +1,4 @@
-/* router.js — where in the world are we?
+/* router.js, where in the world are we?
  *
  * Keeps the child's position in the address bar's "hash" (the part after #), so
  * the browser's Back button works and a link points straight at a place:
@@ -11,7 +11,7 @@
  *   #/r/people-friends/strangers-online/done        → the topic-complete screen
  *
  * The router only reads and writes that text. It knows nothing about regions or
- * missions themselves — main.js looks those up in the data. The language lives
+ * missions themselves, main.js looks those up in the data. The language lives
  * in the "?lang=" search part, untouched here, so switching language keeps your
  * place.
  */
@@ -53,7 +53,7 @@ export function hashFor(route) {
 export function navigate(route) {
   const target = hashFor(route);
   if (window.location.hash === target) {
-    /* Same place — the hashchange event won't fire, so tell the caller to
+    /* Same place, the hashchange event won't fire, so tell the caller to
        redraw by hand. */
     return false;
   }

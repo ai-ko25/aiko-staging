@@ -34,7 +34,7 @@
     "backToTopics": "More topics",
 
     "parentNoteTitle": "👀 For grown-ups:",
-    "parentNotePerfect": "Your child spotted all {flags} red flags and made the safe choice first time, every time — {topics}.",
+    "parentNotePerfect": "Your child spotted all {flags} red flags and made the safe choice first time, every time, {topics}.",
     "parentNoteRethink": "Your child reached every safe choice, after rethinking {count} moment(s). A good chat to have this week: {topic}.",
     "listJoin": ", ",
 

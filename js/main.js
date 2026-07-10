@@ -1,8 +1,8 @@
-/* main.js — the conductor.
+/* main.js, the conductor.
  *
  * Runs once on load. It works out the language, loads the world map, and then
  * listens to the address bar: whenever the position changes (a click, the Back
- * button, a shared link), it draws the matching screen — loading a topic's
+ * button, a shared link), it draws the matching screen, loading a topic's
  * missions the first time that topic is opened. It is the only file that knows
  * about all the others, and it holds no content of its own.
  */
@@ -137,12 +137,8 @@ async function render(route) {
         if (!engine.goTo(route.missionId)) {
           return navigate({ screen: 'topic', regionId: route.regionId, topicId: route.topicId });
         }
-        state.ui.setScore(engine.score);
-        state.ui.renderMissionScene(engine.currentMission(), engine.missionNumber, engine.total, engine.score);
-
-        /* A mission whose message has no flags (data mistake — validation
-           already warned) shouldn't strand the child in Spot forever. */
-        if (engine.canProceedFromSpot) state.ui.showKeepGoing();
+        state.ui.hideScore();   // the scene HUD shows the stars during a mission
+        showCurrentMessage(engine);
         return;
       }
 
@@ -152,7 +148,8 @@ async function render(route) {
         if (!ctx) return navigate({ screen: 'region', regionId: route.regionId });
 
         const engine = engineFor(ctx.topic.id, ctx.missions);
-        return state.ui.showComplete(engine.score, engine.total, parentNote(engine, ctx.missions));
+        const stats = engine.stats;
+        return state.ui.showComplete(stats.stars, stats.totalMessages, parentNote(engine.currentMission(), stats));
       }
 
       default:
@@ -169,25 +166,37 @@ function go(route) {
   if (!navigate(route)) render(route);
 }
 
-/* The "For grown-ups" line on the topic-complete screen: perfect run → list
-   every red-flag pattern covered; otherwise → suggest one conversation topic,
-   taken from the first mission that needed a rethink. */
-function parentNote(engine, missions) {
-  const stats = engine.stats;
+/* Draw the engine's current message into the scene. Used when a mission opens
+   and each time the next message in the conversation arrives. */
+function showCurrentMessage(engine) {
+  state.ui.renderMissionScene(
+    engine.currentMission(), engine.currentMessage(),
+    engine.messageNumber, engine.messageTotal, engine.score);
+
+  /* A message with no flags (data mistake, validation already warned) should
+     not strand the child in Spot forever. */
+  if (engine.canProceedFromSpot) state.ui.showKeepGoing();
+}
+
+/* The "For grown-ups" line on the topic-complete screen: a perfect run lists
+   every red-flag pattern covered; otherwise it suggests one conversation,
+   taken from the first message that needed a rethink. */
+function parentNote(mission, stats) {
+  const messages = mission?.messages ?? [];
   const t = state.t;
 
   if (stats.slips === 0) {
-    const topics = missions
-      .map((m) => m.react?.parentTag)
+    const topics = messages
+      .map((m) => m.parentTag)
       .filter(Boolean)
       .join(t('listJoin'));
     return t('parentNotePerfect', { flags: stats.totalFlags, topics });
   }
 
-  const firstSlipped = missions.find((m) => m.id === stats.slippedIds[0]);
+  const firstSlipped = messages[stats.slippedIndexes[0]];
   return t('parentNoteRethink', {
     count: stats.slips,
-    topic: firstSlipped?.react?.parentTag ?? firstSlipped?.title ?? '',
+    topic: firstSlipped?.parentTag ?? mission?.title ?? '',
   });
 }
 
@@ -211,46 +220,55 @@ const handlers = {
   onExitMission: () => go({ screen: 'topic', regionId: state.route.regionId, topicId: state.route.topicId }),
   onExitComplete:() => go({ screen: 'topic', regionId: state.route.regionId, topicId: state.route.topicId }),
 
-  /* SPOT beat — the child taps a piece of the message. Aiko's line comes from
-     the piece itself: its "found" for a flag, its "hint" (or the mission's
-     fallback) for a harmless part. */
-  onSpot: (pieceIndex) => {
-    const result = state.engine.revealSpot(pieceIndex);
+  /* SPOT beat: the child taps a part of the message. Aiko's line comes from the
+     part itself, its "found" for a flag, its "hint" (or the message's fallback)
+     for a harmless part. */
+  onSpot: (partIndex) => {
+    const result = state.engine.revealSpot(partIndex);
     if (!result) return;
 
-    const mission = state.engine.currentMission();
+    const message = state.engine.currentMessage();
     const say = result.flag
-      ? (result.piece.found ?? '')
-      : (result.piece.hint ?? mission.spot?.missHint ?? '');
+      ? (result.part.found ?? '')
+      : (result.part.hint ?? message.spot?.missHint ?? '');
 
-    state.ui.showSpotResult(result.index, result.flag, say, mission.spot?.prompt ?? '', result.canProceed);
+    state.ui.showSpotResult(result.index, result.flag, say, message.spot?.prompt ?? '', result.canProceed);
   },
 
-  /* Every flag is found — the child taps "Keep going" when they're ready. */
+  /* Every flag in this message is found: the child taps "Keep going". */
   onSpotContinue: () => {
     if (!state.engine || state.engine.beat !== 'spot') return;
     state.engine.toDecide();
-    state.ui.renderDecide(state.engine.currentMission());
+    state.ui.renderDecide(state.engine.currentMessage());
   },
 
-  /* DECIDE beat + REACT */
+  /* DECIDE beat + REACT. The mission is marked done when the last message is
+     solved; the closing takeaway shows only then. */
   onDecide: (choiceId) => {
-    const result = state.engine.answerDecide(choiceId);
+    const engine = state.engine;
+    const result = engine.answerDecide(choiceId);
     if (!result) return;
-    if (result.correct) {
-      markMissionDone(state.engine.currentMission().id, result.scored);
+
+    const lastMessage = engine.isLastMessage;
+    if (result.correct && lastMessage) {
+      markMissionDone(engine.currentMission().id, engine.stats.slips === 0);
     }
-    state.ui.showAnswer(state.engine.currentMission(), result.choice, result.correct, state.engine.isLastMission);
-    state.ui.setScore(state.engine.score);
-    state.ui.setStars(state.engine.score);
+    const takeaway = (result.correct && lastMessage) ? engine.currentMission().react?.takeaway : null;
+    state.ui.showAnswer(result.choice, result.correct, lastMessage, takeaway);
+    state.ui.setStars(engine.score);
   },
 
+  /* Continue: the next message in the conversation, or the topic-complete
+     screen once the whole mission is solved. */
   onNext: () => {
-    const hasMore = state.engine.next();
-    if (hasMore) {
-      handlers.onMission(state.engine.currentMission().id);
-    } else {
+    const engine = state.engine;
+    if (engine.nextMessage()) {
+      showCurrentMessage(engine);
+    } else if (engine.isLastMission) {
       go({ screen: 'complete', regionId: state.route.regionId, topicId: state.route.topicId });
+    } else {
+      engine.next();
+      handlers.onMission(engine.currentMission().id);
     }
   },
 

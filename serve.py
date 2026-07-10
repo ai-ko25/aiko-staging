@@ -11,13 +11,13 @@ Why this file exists
 --------------------
 The usual `python3 -m http.server` lets your browser hold on to old, cached
 copies of the CSS and JavaScript. After you edit a file, a normal refresh can
-keep showing the *previous* version — which makes a change look like it "didn't
+keep showing the *previous* version, which makes a change look like it "didn't
 work" when it actually did.
 
 This server adds one instruction to every response: "do not cache this". With
 that in place, a normal refresh (Cmd+R / Ctrl+R) always shows your latest edits.
 
-Use this while building. For a deployed site you don't need it — real hosts
+Use this while building. For a deployed site you don't need it, real hosts
 handle caching themselves.
 """
 
@@ -37,7 +37,7 @@ class NoCacheHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    print(f"Aiko dev server running — open http://localhost:{PORT}")
+    print(f"Aiko dev server running, open http://localhost:{PORT}")
     print("Caching is disabled, so every edit shows on a normal refresh.")
     print("Press Ctrl+C to stop.")
     try:
