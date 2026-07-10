@@ -1,0 +1,81 @@
+/* theme.css — Aiko's look: colours, fonts, spacing, corners, shadows.
+   Change a value here and it changes everywhere. This is the single home of the
+   Aiko brand and of right-to-left support for Arabic. */
+
+:root {
+  /* ---- Brand colour ---- */
+  --c-primary:       #7f77dd;  /* Aiko purple — buttons, links, highlights   */
+  --c-primary-dark:  #635ac9;  /* darker purple for button hover             */
+  --c-accent:        #ef9f27;  /* gold — brand mark, focus ring, sparkle     */
+  --c-ink:           #26215c;  /* deep navy — all headings and body text     */
+  --c-ink-soft:      #6b6790;  /* muted navy — secondary text                */
+  --c-correct:       #1d9e75;  /* safe green — correct feedback              */
+  --c-correct-soft:  #e2f5ee;  /* soft mint — correct choice background      */
+  --c-wrong:         #d9694c;  /* warm coral — risky feedback (not alarming) */
+  --c-wrong-soft:    #fbeae3;  /* soft peach — risky choice background       */
+  --c-bg:            #fbf6ee;  /* warm off-white page background             */
+  --c-surface:       #ffffff;  /* cards                                      */
+  --c-border:        #ece6dc;  /* soft warm border                          */
+  --c-focus:         #ef9f27;  /* gold focus outline                        */
+
+  /* ---- Aiko's glow ---- (warm golden light that sits behind the character) */
+  --aiko-glow:       rgba(239, 159, 39, 0.42);
+  --aiko-glow-soft:  rgba(239, 159, 39, 0.18);
+
+  /* ---- Scene sky + ground ---- (the little world inside the mission frame) */
+  --c-sky-top:       #b9b2ef;
+  --c-sky-mid:       #d6d1f8;
+  --c-sky-bot:       #f0edff;
+  --c-ground:        #a793e0;
+  --c-ground-dark:   #8e79d4;
+  --c-correct-bright:#3fd39b;   /* the lit end of the progress bar */
+
+  /* ---- Type ---- */
+  --font-display: "Baloo 2", system-ui, sans-serif;              /* headings  */
+  --font-body:    "Nunito", system-ui, -apple-system, sans-serif; /* body     */
+  --size-sm:   0.9rem;
+  --size-md:   1.05rem;
+  --size-lg:   1.3rem;
+  --size-xl:   2rem;
+
+  /* ---- Spacing scale ---- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+
+  /* ---- Shape ---- (rounder than a form; this is a toy) */
+  --radius-lg: 32px;
+  --radius:    22px;
+  --radius-sm: 14px;
+  --shadow:    0 2px 6px rgba(38, 33, 92, 0.05),
+               0 14px 34px rgba(127, 119, 221, 0.14);
+}
+
+/* Arabic uses a font stack that actually has Arabic glyphs, and reads a little
+   larger because Arabic letterforms are shorter than Latin ones. Baloo 2's
+   Arabic sibling isn't loaded, so Arabic headings share the body Arabic font. */
+:root:lang(ar) {
+  --font-display: "Noto Sans Arabic", "Segoe UI", system-ui, sans-serif;
+  --font-body:    "Noto Sans Arabic", "Segoe UI", system-ui, sans-serif;
+  --size-md: 1.1rem;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--font-body);
+  font-size: var(--size-md);
+}
+
+/* Every rule in game.css uses logical properties — `margin-inline-start`
+   rather than `margin-left` — so setting dir="rtl" on <html> mirrors the
+   whole layout with no extra CSS. i18n.js sets that attribute. */
+
+:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+}

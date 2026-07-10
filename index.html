@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aiko</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+
+  <div id="app">
+
+    <header class="topbar">
+      <!-- The brand doubles as a "home" button back to the world map. -->
+      <button type="button" class="brand" id="home-btn">
+        <span class="brand-mark" aria-hidden="true">◆</span>
+        <span class="brand-name" data-i18n="appTitle">Aiko</span>
+      </button>
+
+      <div class="topbar-right">
+        <p class="score" id="score" hidden></p>
+        <button type="button" class="lang-toggle" id="lang-toggle"></button>
+      </div>
+    </header>
+
+    <main class="stage">
+
+      <!-- Shown while a file is being fetched. -->
+      <section class="panel" id="loading-screen">
+        <p class="loading-text" data-i18n="loading">Getting things ready…</p>
+      </section>
+
+      <!-- Shown if content couldn't load. The English text is inline on purpose:
+           this screen appears exactly when the translation file failed. -->
+      <section class="panel panel-error" id="error-screen" hidden>
+        <h1 class="panel-title" data-i18n="errorTitle">Aiko couldn't load the content</h1>
+        <p class="panel-body" data-i18n="errorBody">
+          This usually means the page was opened directly from a folder. Aiko needs a
+          small local server. Open a terminal in the project folder, run the command
+          below, then visit http://localhost:8000
+        </p>
+        <code class="error-hint">python3 serve.py</code>
+      </section>
+
+      <!-- 1. OPEN — Aiko greets the child. -->
+      <section class="panel panel-center" id="open-screen" hidden>
+        <figure class="aiko aiko-lg">
+          <img class="aiko-img" src="assets/aiko/idle.png" alt="">
+        </figure>
+        <h1 class="panel-title" data-i18n="greeting"></h1>
+        <p class="panel-body" data-i18n="tagline"></p>
+        <button type="button" class="btn btn-primary" id="enter-btn" data-i18n="enter"></button>
+      </section>
+
+      <!-- 2. WORLD MAP — the four regions (cards built by ui.js). -->
+      <section class="panel" id="world-screen" hidden>
+        <h1 class="panel-title" data-i18n="worldTitle"></h1>
+        <p class="panel-body" data-i18n="worldSubtitle"></p>
+        <div class="card-grid" id="region-grid"></div>
+      </section>
+
+      <!-- 3. REGION — its topics (cards built by ui.js). -->
+      <section class="panel" id="region-screen" hidden>
+        <button type="button" class="back-link" id="region-back" data-i18n="back"></button>
+        <h1 class="panel-title" id="region-title"></h1>
+        <p class="panel-body" id="region-tagline"></p>
+        <div class="card-grid" id="topic-grid"></div>
+      </section>
+
+      <!-- 4. TOPIC — its missions (cards built by ui.js). -->
+      <section class="panel" id="topic-screen" hidden>
+        <button type="button" class="back-link" id="topic-back" data-i18n="back"></button>
+        <h1 class="panel-title" id="topic-title"></h1>
+        <p class="panel-body" id="topic-desc"></p>
+        <ul class="mission-list" id="mission-list"></ul>
+      </section>
+
+      <!-- 5. MISSION — the scene plays: the message arrives, the child taps the
+           red flags in it (SPOT), picks the safe move (DECIDE), Aiko reacts and
+           teaches (REACT). ui.js drives everything inside the frame. -->
+      <section class="panel panel-scene" id="mission-screen" hidden>
+        <button type="button" class="back-link" id="mission-back" data-i18n="back"></button>
+
+        <div class="scene-frame">
+          <!-- HUD: one clean row — setting chip · progress bar · stars. It is a
+               real flex row above the stage, so nothing below can overlap it. -->
+          <div class="scene-hud">
+            <span class="scene-chip" id="scene-setting"></span>
+            <div class="scene-progress" aria-hidden="true"><i id="progress-fill"></i></div>
+            <span class="scene-chip scene-stars">⭐ <span id="star-count">0</span></span>
+          </div>
+
+          <div class="scene-stage">
+            <!-- Atmosphere: soft layered hills and a ground strip, so the moment
+                 sits in a little daylit place instead of empty space. -->
+            <div class="layer hills-far" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="layer hills-near" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="scene-ground" aria-hidden="true"></div>
+
+            <!-- Characters stand ON the ground. The kid is you; the stranger
+                 slides in from the side when their message arrives; Aiko floats
+                 just above the kid as her guardian. -->
+            <svg class="kid" viewBox="0 0 90 110" aria-hidden="true">
+              <defs><linearGradient id="kidShirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3FD39B"/><stop offset="1" stop-color="#1D9E75"/></linearGradient></defs>
+              <ellipse cx="45" cy="106" rx="22" ry="5" fill="rgba(40,30,80,.18)"/>
+              <path d="M28 70 Q28 58 45 58 Q62 58 62 70 L62 98 Q62 102 58 102 L32 102 Q28 102 28 98 Z" fill="url(#kidShirt)"/>
+              <circle cx="45" cy="38" r="22" fill="#F2C79B"/>
+              <path d="M24 34 Q26 14 45 14 Q64 14 66 34 Q60 26 45 26 Q30 26 24 34 Z" fill="#5A3B22"/>
+              <circle cx="38" cy="40" r="2.7" fill="#3a2a1a"/><circle cx="52" cy="40" r="2.7" fill="#3a2a1a"/>
+              <path d="M40 47 Q45 51 50 47" stroke="#3a2a1a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+              <ellipse cx="36" cy="44" rx="3" ry="2" fill="#F7A8C4" opacity=".5"/><ellipse cx="54" cy="44" rx="3" ry="2" fill="#F7A8C4" opacity=".5"/>
+              <rect x="59" y="64" width="13" height="24" rx="5" fill="#7F77DD"/>
+            </svg>
+
+            <svg class="stranger" id="stranger" viewBox="0 0 90 110" aria-hidden="true">
+              <ellipse cx="45" cy="106" rx="20" ry="5" fill="rgba(40,30,80,.18)"/>
+              <path d="M28 72 Q28 60 45 60 Q62 60 62 72 L62 100 Q62 102 60 102 L30 102 Q28 102 28 100 Z" fill="#8E8AA8"/>
+              <circle cx="45" cy="40" r="21" fill="#A9A4C2"/>
+              <path d="M24 40 Q45 22 66 40" stroke="#6E6A88" stroke-width="5" fill="none"/>
+              <rect x="21" y="39" width="7" height="12" rx="3.5" fill="#6E6A88"/><rect x="62" y="39" width="7" height="12" rx="3.5" fill="#6E6A88"/>
+              <circle cx="39" cy="40" r="2.7" fill="#3a3650"/><circle cx="52" cy="40" r="2.7" fill="#3a3650"/>
+              <path d="M40 48 Q45 46 50 48" stroke="#3a3650" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <text x="45" y="32" font-size="13" text-anchor="middle" fill="#3a3650" font-family="Arial" font-weight="bold">?</text>
+            </svg>
+
+            <!-- ui.js swaps this image and toggles is-safe / is-risky to react. -->
+            <figure class="aiko scene-aiko" id="aiko-figure">
+              <img class="aiko-img" id="aiko-img" src="assets/aiko/idle.png" alt="">
+            </figure>
+
+            <!-- Bubbles live in the TOP zone, opposite sides, staggered — they
+                 never reach the characters below or the HUD above. -->
+            <div class="bubble bubble-stranger" id="stranger-bubble">
+              <small id="sender-label"></small>
+              <span class="bubble-msg" id="message-text"></span>
+            </div>
+            <div class="bubble bubble-aiko" id="aiko-bubble" role="status" aria-live="polite">
+              <span id="aiko-bubble-text"></span>
+            </div>
+          </div>
+
+          <!-- The dock slides up with a hint, then the Decide choice cards. -->
+          <div class="dock" id="dock">
+            <p class="dock-hint" id="dock-hint"></p>
+            <ul class="dock-choices" id="choices"></ul>
+            <!-- Appears a few seconds after the last flag is found — the child
+                 sets the pace and gets to enjoy the win first. -->
+            <button type="button" class="btn keep-going" id="spot-continue" data-i18n="keepGoing" hidden></button>
+            <div class="dock-after" id="feedback" hidden>
+              <p class="takeaway" id="takeaway" hidden>
+                <span class="takeaway-label" data-i18n="takeawayLabel"></span>
+                <span id="takeaway-text"></span>
+              </p>
+              <button type="button" class="btn btn-primary" id="next-btn"></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Topic finished — the big celebration: confetti, glow, stars, and a
+           note for the grown-ups. -->
+      <section class="panel panel-center" id="complete-screen" hidden>
+        <figure class="aiko aiko-lg is-safe aiko-celebrate">
+          <img class="aiko-img" src="assets/aiko/celebrate.png" alt="">
+        </figure>
+        <h1 class="panel-title" data-i18n="finishedTitle"></h1>
+        <div class="star-row" id="star-row"></div>
+        <p class="panel-body" id="final-score"></p>
+        <p class="parent-note">
+          <strong data-i18n="parentNoteTitle"></strong>
+          <span id="parent-note-text"></span>
+        </p>
+        <div class="button-row">
+          <button type="button" class="btn btn-primary" id="replay-btn" data-i18n="replay"></button>
+          <button type="button" class="btn btn-ghost" id="more-topics-btn" data-i18n="backToTopics"></button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <p data-i18n="footer"></p>
+    </footer>
+
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

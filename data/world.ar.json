@@ -1,0 +1,65 @@
+{
+  "language": "ar",
+  "world": {
+    "regions": [
+      {
+        "id": "people-friends",
+        "name": "الناس والأصدقاء",
+        "tagline": "الأشخاص الذين تقابلهم وتتحدث إليهم على الإنترنت.",
+        "accent": "--c-primary",
+        "status": "available",
+        "topics": [
+          {
+            "id": "strangers-online",
+            "name": "الغرباء على الإنترنت",
+            "description": "أشخاص لم تقابلهم في الحياة الحقيقية.",
+            "status": "available",
+            "missions": "strangers-online"
+          },
+          {
+            "id": "bullying-kindness",
+            "name": "التنمّر واللطف",
+            "description": "التعامل مع الإساءة، وأن تكون صديقًا طيّبًا.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "peer-pressure",
+            "name": "ضغط الأصدقاء",
+            "description": "حين يدفعك الأصدقاء لفعل شيء ما.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "livestreams",
+            "name": "البث المباشر",
+            "description": "البث المباشر، ومن يشاهدك فعلًا.",
+            "status": "coming-soon"
+          }
+        ]
+      },
+      {
+        "id": "private-world",
+        "name": "عالمك الخاص",
+        "tagline": "اسمك وصورك وكلمات مرورك وأسرارك.",
+        "accent": "--c-accent",
+        "status": "coming-soon",
+        "topics": []
+      },
+      {
+        "id": "spot-the-trick",
+        "name": "اكتشف الخدعة",
+        "tagline": "عمليات الاحتيال والمحتوى المزيّف والأشياء التي ليست كما تبدو.",
+        "accent": "--c-wrong",
+        "status": "coming-soon",
+        "topics": []
+      },
+      {
+        "id": "feeling-good",
+        "name": "الشعور بالرضا على الإنترنت",
+        "tagline": "التوازن، واللطف مع نفسك، ومعرفة متى تأخذ استراحة.",
+        "accent": "--c-correct",
+        "status": "coming-soon",
+        "topics": []
+      }
+    ]
+  }
+}

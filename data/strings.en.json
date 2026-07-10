@@ -1,0 +1,43 @@
+{
+  "language": "en",
+  "dir": "ltr",
+  "langToggle": "العربية",
+  "ui": {
+    "appTitle": "Aiko",
+    "greeting": "Hi! I'm Aiko.",
+    "tagline": "Your online-safety buddy. Ready to explore the world together?",
+    "enter": "Enter the world",
+
+    "worldTitle": "Choose a place to explore",
+    "worldSubtitle": "Four parts of Aiko's world. More opening soon.",
+    "comingSoon": "Coming soon",
+    "back": "Back",
+    "missionsDone": "{done} / {total} done",
+
+    "loading": "Getting things ready…",
+    "errorTitle": "Aiko couldn't load the content",
+    "errorBody": "This usually means the page was opened directly from a folder. Aiko needs a small local server. Open a terminal in the project folder, run the command below, then visit http://localhost:8000",
+
+    "spotPrompt": "What feels a little off here?",
+    "spotHint": "🔍 Tap the part of the message that feels off",
+    "keepGoing": "Keep going →",
+    "tryAgain": "Try another way 💛",
+    "progress": "Mission {current} of {total}",
+    "score": "Score: {score}",
+    "takeawayLabel": "Remember:",
+    "next": "Next mission",
+    "finish": "Finish topic",
+
+    "finishedTitle": "Topic complete!",
+    "finalScore": "You got {score} of {total} safe on the first try. Replay any time to sharpen up.",
+    "replay": "Play this topic again",
+    "backToTopics": "More topics",
+
+    "parentNoteTitle": "👀 For grown-ups:",
+    "parentNotePerfect": "Your child spotted all {flags} red flags and made the safe choice first time, every time — {topics}.",
+    "parentNoteRethink": "Your child reached every safe choice, after rethinking {count} moment(s). A good chat to have this week: {topic}.",
+    "listJoin": ", ",
+
+    "footer": "Aiko is a practice space. In real life, always tell a grown-up you trust."
+  }
+}

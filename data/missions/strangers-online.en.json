@@ -1,0 +1,57 @@
+{
+  "language": "en",
+  "topic": "strangers-online",
+  "missions": [
+    {
+      "id": "stranger-dm",
+      "title": "A Message From Someone New",
+      "setting": "🎮 Game Chat",
+      "sender": "someone online",
+      "message": [
+        {
+          "text": "Hey! You're really good at this. ",
+          "hint": "A kind word on its own is fine. Look at what they're asking for…"
+        },
+        {
+          "text": "What school do you go to?",
+          "flag": true,
+          "found": "Nice eye! Asking about your school is a red flag. 🚩"
+        }
+      ],
+      "spot": {
+        "prompt": "Someone we don't know just sent this. Something in it isn't safe to answer — can you tap it?",
+        "missHint": "Hmm, look again — which part feels a bit too personal, or pushy?"
+      },
+      "decide": {
+        "prompt": "Now — what should we do about it?",
+        "choices": [
+          {
+            "id": "tell-them",
+            "icon": "🏫",
+            "text": "Tell them my school",
+            "correct": false,
+            "feedback": "Careful! Your school is a big clue about where to find you in real life. That's not something to share with someone you only know online."
+          },
+          {
+            "id": "tell-adult",
+            "icon": "🗣️",
+            "text": "Don't answer — tell a grown-up I trust",
+            "correct": true,
+            "feedback": "Great choice! Telling a trusted adult is always safe — and you are never in trouble for asking for help."
+          },
+          {
+            "id": "swap-info",
+            "icon": "🔄",
+            "text": "Ask what school THEY go to",
+            "correct": false,
+            "feedback": "It feels fair to swap, but you still can't be sure who is really typing. It's safer not to trade personal details at all."
+          }
+        ]
+      },
+      "react": {
+        "takeaway": "Where you go to school is private information, even if the person seems friendly.",
+        "parentTag": "asking where you go to school"
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "language": "en",
+  "topic": "spot-the-trick",
+  "missions": [
+    {
+      "id": "free-vbucks",
+      "title": "The Too-Good-To-Be-True Prize",
+      "setting": "▶️ Video Time",
+      "sender": "a pop-up window",
+      "message": [
+        {
+          "text": "YOU HAVE WON 10,000 FREE COINS! ",
+          "flag": true,
+          "found": "Spotted! A prize for doing nothing is almost always a trick. 🚩"
+        },
+        {
+          "text": "Enter your username and password",
+          "flag": true,
+          "found": "The big one! Nobody real ever needs your password to give you a prize. 🚩"
+        },
+        {
+          "text": " to claim them now!",
+          "hint": "The hurry is part of the trick — but the real danger is what it asks you to type."
+        }
+      ],
+      "spot": {
+        "prompt": "A window just popped up over your video. TWO things about it are fishy — can you tap them both?",
+        "missHint": "Close — look at what it promises, and what it asks you to type."
+      },
+      "decide": {
+        "prompt": "So what do we do about this pop-up?",
+        "choices": [
+          {
+            "id": "enter-password",
+            "icon": "🔑",
+            "text": "Type my password in fast",
+            "correct": false,
+            "feedback": "That pop-up is a trick called phishing. Real games never ask for your password to give you a prize — the rush is there to stop you thinking."
+          },
+          {
+            "id": "close-it",
+            "icon": "❌",
+            "text": "Close it without typing anything",
+            "correct": true,
+            "feedback": "Exactly right. If a prize sounds too good to be true, it almost always is. Closing the window costs you nothing."
+          },
+          {
+            "id": "ask-friend",
+            "icon": "📤",
+            "text": "Send it to a friend",
+            "correct": false,
+            "feedback": "Kind thought! But passing on a trick spreads it. Better to close it and warn your friend not to click if they see it."
+          }
+        ]
+      },
+      "react": {
+        "takeaway": "Nobody legitimate will ever ask for your password — not a game, not a website, not a stranger.",
+        "parentTag": "pop-ups and prizes that ask for passwords"
+      }
+    }
+  ]
+}

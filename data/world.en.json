@@ -1,0 +1,65 @@
+{
+  "language": "en",
+  "world": {
+    "regions": [
+      {
+        "id": "people-friends",
+        "name": "People & Friends",
+        "tagline": "The people you meet and talk to online.",
+        "accent": "--c-primary",
+        "status": "available",
+        "topics": [
+          {
+            "id": "strangers-online",
+            "name": "Strangers Online",
+            "description": "People you've never met in real life.",
+            "status": "available",
+            "missions": "strangers-online"
+          },
+          {
+            "id": "bullying-kindness",
+            "name": "Bullying & Being Kind",
+            "description": "Handling meanness, and being a good friend.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "peer-pressure",
+            "name": "Peer Pressure",
+            "description": "When friends push you to do something.",
+            "status": "coming-soon"
+          },
+          {
+            "id": "livestreams",
+            "name": "Livestreams",
+            "description": "Going live, and who's really watching.",
+            "status": "coming-soon"
+          }
+        ]
+      },
+      {
+        "id": "private-world",
+        "name": "Your Private World",
+        "tagline": "Your name, photos, passwords, and secrets.",
+        "accent": "--c-accent",
+        "status": "coming-soon",
+        "topics": []
+      },
+      {
+        "id": "spot-the-trick",
+        "name": "Spot the Trick",
+        "tagline": "Scams, fakes, and things that aren't what they seem.",
+        "accent": "--c-wrong",
+        "status": "coming-soon",
+        "topics": []
+      },
+      {
+        "id": "feeling-good",
+        "name": "Feeling Good Online",
+        "tagline": "Balance, kindness to yourself, and knowing when to take a break.",
+        "accent": "--c-correct",
+        "status": "coming-soon",
+        "topics": []
+      }
+    ]
+  }
+}
