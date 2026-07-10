@@ -1,0 +1,24 @@
+# Aiko: files that must NOT be published.
+# These stay on your computer; git just will not track or deploy them.
+# Any git-based deploy (GitHub Pages, Netlify, Vercel, Cloudflare Pages) will
+# honour this file and leave these out of what goes live.
+
+# Internal prototype material. Must not be published.
+reference/
+
+# Raw source art (about 42 MB). The app itself only uses assets/aiko/.
+# It stays on your machine; it is just not shipped. If you ever do want to
+# publish these, delete this line.
+assets/images/
+
+# macOS / Windows / editor junk
+.DS_Store
+**/.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Local logs
+*.log
