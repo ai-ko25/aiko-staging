@@ -1,0 +1,194 @@
+[
+  {
+    "file": "intro-greeting",
+    "en": "Hi! I'm Aiko.",
+    "ar": "مرحبًا! أنا أيكو.",
+    "when": "Home screen: Aiko's very first words"
+  },
+  {
+    "file": "intro-tagline",
+    "en": "Your online-safety buddy. Ready to explore the world together?",
+    "ar": "رفيقك في الأمان على الإنترنت. هل أنت مستعد لاستكشاف العالم معًا؟",
+    "when": "Home screen: straight after the greeting"
+  },
+  {
+    "file": "run-coach",
+    "en": "Tap to jump!",
+    "ar": "اضغط للقفز!",
+    "when": "While the runner game is playing"
+  },
+  {
+    "file": "stranger-here",
+    "en": "Uh oh! A stranger stopped your game. Deal with this, then play on!",
+    "ar": "أوه! شخص غريب أوقف لعبتك. لنتصرّف، ثم نكمل اللعب!",
+    "when": "Stranger walks in and freezes the game (messages 2 and 3)"
+  },
+  {
+    "file": "spot-done",
+    "en": "You showed a grown-up. Great catch!",
+    "ar": "أحسنت! لقد عرضتها على شخص بالغ.",
+    "when": "Just after the child posts a red flag"
+  },
+  {
+    "file": "demo-watch",
+    "en": "Uh oh! A stranger just stopped your game. Watch what I do.",
+    "ar": "أوه! شخص غريب أوقف لعبتك للتو. شاهد ماذا أفعل.",
+    "when": "Demo beat: Aiko's 'watch' line"
+  },
+  {
+    "file": "demo-spotting",
+    "en": "Now I'm looking for the part that feels wrong… there it is!",
+    "ar": "الآن أبحث عن الجزء الذي يبدو غريبًا… ها هو!",
+    "when": "Demo beat: Aiko's 'spotting' line"
+  },
+  {
+    "file": "demo-doing",
+    "en": "I never answer that. I take it to a grown-up.",
+    "ar": "لا أجيب عن هذا أبدًا. آخذه إلى شخص بالغ.",
+    "when": "Demo beat: Aiko's 'doing' line"
+  },
+  {
+    "file": "demo-over",
+    "en": "Now it's your turn. You try!",
+    "ar": "الآن جاء دورك. جرّب!",
+    "when": "Demo beat: Aiko's 'over' line"
+  },
+  {
+    "file": "age-task",
+    "en": "Something here isn't safe. Drag it to a grown-up.",
+    "ar": "هناك شيء غير آمن هنا. اسحبه إلى شخص بالغ.",
+    "when": "[age] the task line"
+  },
+  {
+    "file": "age-misshint",
+    "en": "Hmm, look again, what feels a bit too personal, or pushy?",
+    "ar": "همم، انظر مرة أخرى، أي جزء يبدو شخصيًا أكثر من اللازم؟",
+    "when": "[age] nudge if they miss"
+  },
+  {
+    "file": "age-hint",
+    "en": "That part is just being friendly. Look at what they ask you next.",
+    "ar": "هذا الجزء مجرد لطف. انظر إلى ما يسألك عنه بعده.",
+    "when": "[age] they posted a harmless part"
+  },
+  {
+    "file": "age-found",
+    "en": "Nice eye! Asking your age is a red flag.",
+    "ar": "أحسنت الملاحظة! السؤال عن عمرك علامة حمراء.",
+    "when": "[age] they posted the RIGHT part"
+  },
+  {
+    "file": "age-question",
+    "en": "A stranger just asked how old you are. What should we do?",
+    "ar": "شخص غريب سألك للتو عن عمرك. ماذا نفعل؟",
+    "when": "[age] the Decide question"
+  },
+  {
+    "file": "age-safe",
+    "en": "Nice, you kept your age to yourself!",
+    "ar": "أحسنت، احتفظت بعمرك لنفسك!",
+    "when": "[age] they chose 'Keep it private'"
+  },
+  {
+    "file": "age-risky",
+    "en": "Your age is private. Someone you just met online doesn't need it.",
+    "ar": "عمرك معلومة خاصة. من قابلته للتو على الإنترنت لا يحتاج إليها.",
+    "when": "[age] they chose 'Tell my age'"
+  },
+  {
+    "file": "home-alone-task",
+    "en": "One part of this isn't safe. Drag it to a grown-up.",
+    "ar": "جزء من هذه الرسالة غير آمن. اسحبه إلى شخص بالغ.",
+    "when": "[home-alone] the task line"
+  },
+  {
+    "file": "home-alone-misshint",
+    "en": "Look again, which part is a stranger not supposed to know?",
+    "ar": "انظر مرة أخرى، أي جزء لا يُفترض أن يعرفه شخص غريب؟",
+    "when": "[home-alone] nudge if they miss"
+  },
+  {
+    "file": "home-alone-hint",
+    "en": "That word is just friendly. Look at the question right after it.",
+    "ar": "هذه الكلمة مجرد لطف. انظر إلى السؤال الذي يليها مباشرة.",
+    "when": "[home-alone] they posted a harmless part"
+  },
+  {
+    "file": "home-alone-found",
+    "en": "Exactly! Asking if you're home alone is a red flag.",
+    "ar": "بالضبط! السؤال عمّا إذا كنت وحدك في البيت علامة حمراء.",
+    "when": "[home-alone] they posted the RIGHT part"
+  },
+  {
+    "file": "home-alone-question",
+    "en": "A stranger just asked if you're home alone. What should we do?",
+    "ar": "شخص غريب سألك للتو إن كنت وحدك في البيت. ماذا نفعل؟",
+    "when": "[home-alone] the Decide question"
+  },
+  {
+    "file": "home-alone-risky",
+    "en": "Whether you're home alone is private. A stranger never needs to know that.",
+    "ar": "كونك وحدك في البيت أمر خاص. لا يحتاج شخص غريب أبدًا إلى معرفته.",
+    "when": "[home-alone] they chose 'I'm home alone'"
+  },
+  {
+    "file": "home-alone-safe",
+    "en": "Great, you didn't say who's home!",
+    "ar": "رائع، لم تخبره بمن في البيت!",
+    "when": "[home-alone] they chose 'Don't answer'"
+  },
+  {
+    "file": "secret-task",
+    "en": "A big red flag is hiding here. Drag it to a grown-up.",
+    "ar": "هناك علامة حمراء كبيرة مختبئة هنا. اسحبها إلى شخص بالغ.",
+    "when": "[secret] the task line"
+  },
+  {
+    "file": "secret-misshint",
+    "en": "Look for the part that asks you to hide something from a grown-up.",
+    "ar": "ابحث عن الجزء الذي يطلب منك إخفاء شيء عن شخص بالغ.",
+    "when": "[secret] nudge if they miss"
+  },
+  {
+    "file": "secret-hint",
+    "en": "Free stuff sounds fun, but read the next part carefully.",
+    "ar": "الأشياء المجانية تبدو ممتعة، لكن اقرأ الجزء التالي بتمعّن.",
+    "when": "[secret] they posted a harmless part"
+  },
+  {
+    "file": "secret-found",
+    "en": "Yes! Being asked to keep a secret is a big red flag.",
+    "ar": "نعم! الطلب منك أن تكتم سرًّا علامة حمراء كبيرة.",
+    "when": "[secret] they posted the RIGHT part"
+  },
+  {
+    "file": "secret-question",
+    "en": "A stranger just asked you to keep a secret from your parents. What should we do?",
+    "ar": "شخص غريب طلب منك للتو أن تكتم سرًّا عن والديك. ماذا نفعل؟",
+    "when": "[secret] the Decide question"
+  },
+  {
+    "file": "secret-safe",
+    "en": "Yes, no secrets from your grown-ups!",
+    "ar": "نعم، لا أسرار عن الكبار الذين تثق بهم!",
+    "when": "[secret] they chose 'Tell a grown-up'"
+  },
+  {
+    "file": "secret-risky",
+    "en": "Being asked to keep a secret from your parents is a big red flag. Always tell a grown-up you trust.",
+    "ar": "الطلب منك أن تكتم سرًّا عن والديك علامة حمراء كبيرة. أخبر دائمًا شخصًا بالغًا تثق به.",
+    "when": "[secret] they chose 'Keep the secret'"
+  },
+  {
+    "file": "takeaway",
+    "en": "A stranger online doesn't need your age, whether you're home, or your secrets. When something feels off, tell a grown-up you trust.",
+    "ar": "الشخص الغريب على الإنترنت لا يحتاج إلى عمرك، ولا إلى معرفة إن كنت في البيت، ولا إلى أسرارك. حين يبدو شيء غريبًا، أخبر شخصًا بالغًا تثق به.",
+    "when": "The closing lesson, after the last message"
+  },
+  {
+    "file": "mission-complete",
+    "en": "Mission complete!",
+    "ar": "اكتملت المهمة!",
+    "when": "Mission complete screen"
+  }
+]
