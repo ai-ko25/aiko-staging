@@ -460,6 +460,7 @@ export function createUI(t, handlers) {
         if (btn) {
           btn.classList.add('found');
           later(() => btn.classList.add('delivered'), 800);
+          later(() => btn.classList.add('collapsed'), 1200);  /* take the space back */
         }
         setAiko('safe');
         aikoSay(say);
@@ -471,6 +472,9 @@ export function createUI(t, handlers) {
              the pace and gets to enjoy the win. No auto-advance. */
           this.setProgress((sceneN - 0.5) / sceneTotal);
           el('message-text').querySelectorAll('.msg-piece').forEach((p) => { p.disabled = true; });
+          /* The task line was still ordering them to drag it to a grown-up after
+             they already had. It becomes the receipt for what they just did. */
+          el('dock-hint').textContent = t('spotDone');
           later(() => this.showKeepGoing(), 3000);
         }
       } else {

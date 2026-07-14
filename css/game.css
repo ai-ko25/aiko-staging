@@ -320,7 +320,11 @@
   position: absolute;
   inset-block-start: 78px;
   inset-inline-start: 18px;
-  z-index: 30;
+  /* UNDER the bubbles (22+), never over them. Aiko's reply grows upward into
+     this same corner, and a long line was landing behind this chip. Whoever is
+     speaking wins the pixels. */
+  z-index: 18;
+  transition: opacity 0.4s ease;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -333,6 +337,11 @@
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(60, 52, 137, 0.3);
 }
+
+/* The stranger has interrupted: the game is paused, so its score steps back and
+   stops competing with Aiko for the child's eye. It stays on screen, because
+   seeing the game you were pulled out of IS the lesson. */
+.runner-frozen .run-hud { opacity: 0.4; }
 
 /* An author `display` can beat the `hidden` attribute, so say it outright. */
 .run-hud[hidden],
@@ -553,8 +562,11 @@
   background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
   color: #fff;
   inset-inline-start: 14px;
-  inset-block-end: min(314px, calc(100% - 160px));
-  max-width: 210px;
+  /* The second value is the short-screen guard. It was 160px, which left a long
+     line only 82px of room before it hit the runner count, so it grew straight
+     into it. 196px buys that headroom back. */
+  inset-block-end: min(314px, calc(100% - 196px));
+  max-width: 236px;
   box-shadow: 0 12px 30px rgba(60, 52, 137, 0.34);
   border-end-start-radius: 6px;
 }
@@ -592,7 +604,10 @@
   border: 2px solid var(--c-border);
   box-shadow: 0 3px 0 rgba(60, 52, 137, 0.16);
   cursor: pointer;
-  touch-action: manipulation;
+  /* NOT `manipulation`: that still lets the browser claim a vertical finger
+     move for scrolling, so a child's drag became a page scroll and the chip
+     never moved. The chip owns the gesture outright. */
+  touch-action: none;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.12s ease, box-shadow 0.12s ease,
               background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
@@ -728,6 +743,10 @@
   transform: scale(0.3);
   transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.5, -0.3, 0.7, 0.2);
 }
+
+/* Once it has faded, take its space back, or the bubble keeps a dead hole where
+   the chip used to be. It shrinks around what is left. */
+.msg-piece.collapsed { display: none; }
 
 /* ---------- The dock: hint, choices, takeaway ---------- */
 
