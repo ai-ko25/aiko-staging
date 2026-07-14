@@ -9,6 +9,7 @@
 
 import { createRunner } from './minigame.js';
 import { createVoice } from './voice.js';
+import { createSfx } from './sfx.js';
 
 const el = (id) => document.getElementById(id);
 
@@ -18,6 +19,9 @@ const runner = createRunner();
 /* Aiko's voice. Silent until the mp3 files exist, and silent for anyone whose
    browser blocks audio: a child is never blocked by a clip that did not load. */
 const voice = createVoice();
+
+/* The sounds of the world. Synthesised, so there is nothing to download. */
+const sfx = createSfx();
 
 /* How long the child gets to play before the stranger walks in. The first
    message gives them longer, so they learn the game and are properly enjoying it
@@ -126,6 +130,7 @@ function armGrownup(on) {
 /** Tap path: the chip rises into the child's hand and the mailbox calls for it. */
 function liftChip(btn) {
   dropChip();
+  sfx.play('pickup');
   btn.classList.add('lifted');
   liftedIndex = Number(btn.dataset.pieceIndex);
   armGrownup(true);
@@ -168,6 +173,7 @@ function currentShift(btn) {
  * calls this too, so the chip visibly flies across rather than teleporting.
  */
 function flyIntoGrownup(btn) {
+  sfx.play('fly');
   const [sx, sy] = currentShift(btn);
   const chip = btn.getBoundingClientRect();
   const box = el('grownup').getBoundingClientRect();
@@ -199,6 +205,7 @@ function startDrag(event, btn, deliver) {
 
     if (!dragging && Math.hypot(dx, dy) > DRAG_SLOP) {
       dragging = true;
+      sfx.play('pickup');
       dropChip();
       btn.classList.add('dragging');
       armGrownup(true);
@@ -241,6 +248,11 @@ export function createUI(t, handlers) {
   /* The document's language is already set by i18n before this runs, so the
      right set of recordings is chosen without threading the language through. */
   voice.load(document.documentElement.lang || 'en');
+
+  /* A browser will not make a sound until the child has touched the screen. The
+     first touch anywhere wakes the audio engine, so the first sound that MATTERS
+     is never the one that gets swallowed. */
+  document.addEventListener('pointerdown', () => sfx.unlock(), { once: true });
 
   /* Persistent buttons, these exist for the whole session. */
   el('home-btn').addEventListener('click', handlers.onHome);
@@ -514,7 +526,7 @@ export function createUI(t, handlers) {
       const box = el('grownup');
       renderParts(demo.parts, { live: false });
 
-      later(() => el('stranger').classList.add('in'), DEMO.strangerIn);
+      later(() => { el('stranger').classList.add('in'); sfx.play('stranger'); }, DEMO.strangerIn);
       later(() => el('stranger-bubble').classList.add('show'), DEMO.bubbleUp);
       later(() => { box.hidden = false; }, DEMO.boxUp);
 
@@ -579,7 +591,7 @@ export function createUI(t, handlers) {
       /* Say WHY the game just stopped. Without this the freeze reads as the game
          breaking, and the whole lesson (he turns up while you are busy and having
          fun, and playing has to wait) is left for the child to infer. */
-      later(() => { setAiko('risky'); aikoSay(t('strangerHere')); }, 500);
+      later(() => { sfx.play('stranger'); setAiko('risky'); aikoSay(t('strangerHere')); }, 500);
 
       later(() => el('stranger-bubble').classList.add('show'), 1100);
       later(() => { el('grownup').hidden = false; }, 1500);
@@ -616,12 +628,13 @@ export function createUI(t, handlers) {
           later(() => btn.classList.add('delivered'), 380);
           later(() => btn.classList.add('collapsed'), 780);   /* take the space back */
         }
-        later(() => box.classList.add('got'), 300);           /* it gulps as the chip lands */
+        later(() => { box.classList.add('got'); sfx.play('posted'); }, 300);  /* it gulps as the chip lands */
         later(() => box.classList.remove('got'), 900);
         setAiko('safe');
         aikoSay(say);
 
         if (canProceed) {
+          sfx.play('star');
           /* Every flag found. Lock the rest of the message so the celebration
              is not interrupted, hold Aiko's cheer and its found line on screen,
              and after a few seconds offer a friendly Keep going. The child sets
@@ -637,6 +650,7 @@ export function createUI(t, handlers) {
       } else {
         /* A harmless tap: Aiko's gentle nudge stays up for as long as the child
            needs, until they tap again. */
+        sfx.play('wrong');
         setAiko('risky');
         aikoSay(say);
       }
@@ -693,6 +707,7 @@ export function createUI(t, handlers) {
      * pick. The stranger's bubble is hidden here so Aiko's reply has full room.
      */
     showAnswer(choice, correct, isLastMessage, takeaway) {
+      sfx.play(correct ? 'correct' : 'wrong');
       const picked = el('choices').querySelector(`[data-choice-id="${choice.id}"]`);
       el('stranger-bubble').classList.remove('show');
 
@@ -748,6 +763,7 @@ export function createUI(t, handlers) {
       el('final-score').textContent = t('finalScore', { score: stars, total });
       el('parent-note-text').textContent = parentNoteText ?? '';
 
+      sfx.play('complete');
       this.show('complete');
       confetti();
     },

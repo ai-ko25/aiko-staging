@@ -14,12 +14,17 @@
  * calls back when the stranger should arrive. ui.js does the rest.
  */
 
+import { createSfx } from './sfx.js';
+
 const el = (id) => document.getElementById(id);
 
 const TRAVEL_MS = 2600;   // how long a rock takes to cross the whole scene
 const HIT_AT    = 0.68;   // ...and roughly where along that it draws level with the kid
 const SPAWN_MS  = 1500;   // gap between rocks
 const JUMP_MS   = 620;    // how long the kid is in the air
+
+
+const sfx = createSfx();
 
 export function createRunner() {
   let timers = [];
@@ -43,6 +48,7 @@ export function createRunner() {
   function jump() {
     if (!live || jumping) return;
     jumping = true;
+    sfx.play('jump');
     const kid = el('kid');
     kid.classList.remove('stumble');
     kid.classList.add('jump');
@@ -62,10 +68,12 @@ export function createRunner() {
     after(() => {
       if (!live) return;
       if (jumping) {
+        sfx.play('clear');
         setScore(score + 1);
         rock.classList.add('cleared');
       } else {
         const kid = el('kid');
+        sfx.play('stumble');
         kid.classList.add('stumble');
         after(() => kid.classList.remove('stumble'), 500);
       }
