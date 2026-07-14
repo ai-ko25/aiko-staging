@@ -9,6 +9,16 @@
       "icon": "🎮",
       "setting": "🎮 Game Chat",
       "sender": "someone online",
+      "demo": {
+        "prompt": "Watch Aiko first.",
+        "parts": [
+          { "text": "hi 👋 " },
+          { "text": "what school do you go to?", "flag": true }
+        ],
+        "watch": "Someone new is talking to you. Watch what I do.",
+        "doing": "I never answer that. I take it to a grown-up. 🚩",
+        "over": "Now it's your turn. You try!"
+      },
       "messages": [
         {
           "id": "age",

@@ -110,6 +110,21 @@ function dropChip() {
   armGrownup(false);
 }
 
+/**
+ * Build the message out of tappable chips (buttons, so keyboards and screen
+ * readers reach them too). `live: false` is the demo: the child watches these,
+ * they are not theirs to touch yet.
+ */
+function renderParts(parts, { live = true } = {}) {
+  el('message-text').replaceChildren(...(parts ?? []).map((part, i) => {
+    const btn = make('button', 'msg-piece', part.text);
+    btn.type = 'button';
+    btn.dataset.pieceIndex = String(i);
+    btn.disabled = !live;
+    return btn;
+  }));
+}
+
 /** How far a chip has already been shifted from where the text flow put it. */
 function currentShift(btn) {
   const m = /(-?[\d.]+)px\s+(-?[\d.]+)px/.exec(btn.style.translate || '');
@@ -411,14 +426,7 @@ export function createUI(t, handlers) {
         return tile;
       }));
 
-      /* Build the message from tappable parts (buttons, so keyboards and screen
-         readers can reach them too). */
-      el('message-text').replaceChildren(...(message.parts ?? []).map((part, i) => {
-        const btn = make('button', 'msg-piece', part.text);
-        btn.type = 'button';
-        btn.dataset.pieceIndex = String(i);
-        return btn;
-      }));
+      renderParts(message.parts);
 
       /* Everything starts hidden and calm. */
       el('stranger-bubble').classList.remove('show');
@@ -441,12 +449,71 @@ export function createUI(t, handlers) {
       /* The child does NOT start by reading a message. They start by PLAYING.
          The stranger interrupts that game, which is the whole lesson: he arrives
          while you are busy and enjoying yourself, not with a fanfare. */
+      /* On the very first message the stranger's opener is Aiko's to answer. She
+         shows the child the move once, on a throwaway line of her own, before
+         handing them a real red flag. Nobody should have to guess what to do. */
+      const demo = messageNumber === 1 ? mission.demo : null;
+
       runner.start({
         fresh: messageNumber === 1,
         playMs: messageNumber === 1 ? PLAY_MS_FIRST : PLAY_MS_NEXT,
         coachText: t('runCoach'),
-        onInterrupt: () => this.interrupt(message),
+        onInterrupt: () => (demo ? this.playDemo(demo, message) : this.interrupt(message)),
       });
+    },
+
+    /**
+     * The demo beat. Aiko does the whole gesture herself, once, on a practice
+     * message that is not part of the mission and is never scored, so watching
+     * her never gives away a real answer. Then she hands over.
+     *
+     * It is fully scripted: the chips are dead (disabled) for its whole length,
+     * so a child prodding the screen mid-demo cannot fall into the real Spot
+     * beat early. It ends by swapping in the real message and calling the exact
+     * same code path a normal message uses.
+     */
+    playDemo(demo, message) {
+      const box = el('grownup');
+      renderParts(demo.parts, { live: false });
+
+      later(() => el('stranger').classList.add('in'), 200);
+      later(() => el('stranger-bubble').classList.add('show'), 800);
+      later(() => { box.hidden = false; }, 1100);
+
+      later(() => {
+        el('dock-hint').textContent = demo.prompt ?? '';
+        el('dock').classList.add('up');
+        aikoSay(demo.watch ?? '');
+      }, 1400);
+
+      /* She reaches in, takes the sketchy part, and posts it. The chip travels
+         the same path, into the same box, with the same animation the child's
+         will: they are watching a rehearsal of their own next move. */
+      later(() => {
+        const chip = el('message-text')
+          .querySelector(`[data-piece-index="${demo.parts.findIndex((p) => p.flag)}"]`);
+        if (!chip) return;
+        chip.classList.add('found');
+        flyIntoGrownup(chip);
+        later(() => chip.classList.add('delivered'), 380);
+        later(() => chip.classList.add('collapsed'), 780);
+      }, 2600);
+
+      later(() => box.classList.add('got'), 2900);
+      later(() => box.classList.remove('got'), 3500);
+
+      later(() => { setAiko('safe'); aikoSay(demo.doing ?? ''); }, 3100);
+      later(() => aikoSay(demo.over ?? ''), 5100);
+
+      /* Handover. The practice line is cleared away, the real one arrives, and
+         from here everything behaves exactly as it always did. */
+      later(() => {
+        renderParts(message.parts);
+        setAiko('idle');
+        aikoSay('');
+        box.classList.remove('armed', 'over', 'got');
+        el('dock-hint').textContent = message.spot?.prompt ?? t('spotHint');
+      }, 6600);
     },
 
     /* The stranger walks in on the same track the rocks came from. The game
