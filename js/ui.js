@@ -29,15 +29,16 @@ const PLAY_MS_NEXT  = 4500;
  * these are the only numbers to change.
  */
 const DEMO = {
-  strangerIn:  200,
-  bubbleUp:    900,
-  boxUp:      1300,
-  watchLine:  1800,   // "Someone new is talking to you. Watch what I do."
-  takeChip:   4400,   // …2.6s to read it before anything moves
-  gulp:       4700,
-  doingLine:  5000,   // "I never answer that. I take it to a grown-up."
-  overLine:   8000,   // …3s to read that
-  handOver:  10800,   // …2.8s to read "Now it's your turn"
+  strangerIn:   200,
+  bubbleUp:    1100,
+  boxUp:       1500,
+  watchLine:   2000,   // "Uh oh! A stranger stopped your game. Watch what I do."
+  spotLight:   5700,   // Aiko hunts: the sketchy chip swells and pulses…
+  takeChip:    9400,   // …and only 3.7s LATER is it taken. The hunt is the lesson.
+  gulp:        9800,
+  doingLine:  10200,   // "I never answer that. I take it to a grown-up."
+  overLine:   13900,
+  handOver:   17600,   // …3.7s to read "Now it's your turn"
 };
 
 /* Which sprite Aiko wears for each mood. Presentation assets, not mission
@@ -512,17 +513,31 @@ export function createUI(t, handlers) {
         aikoSay(demo.watch ?? '');
       }, DEMO.watchLine);
 
-      /* Aiko reaches in, takes the sketchy part, and posts it. The chip travels
-         the same path, into the same box, with the same animation the child's
-         will: they are watching a rehearsal of their own next move. */
+      const flagChip = () => el('message-text')
+        .querySelector(`[data-piece-index="${demo.parts.findIndex((p) => p.flag)}"]`);
+
+      /* Aiko HUNTS first. The sketchy chip swells and pulses while Aiko names
+         what it is doing, and it stays like that for a good few seconds. Before
+         this, the bad line was snatched away the instant it was pointed at, and
+         a child never saw WHICH part was the problem, only that something flew
+         off the screen. The spotting is the lesson; the throw is just the end. */
       later(() => {
-        const chip = el('message-text')
-          .querySelector(`[data-piece-index="${demo.parts.findIndex((p) => p.flag)}"]`);
+        setAiko('risky');
+        aikoSay(demo.spotting ?? '');
+        flagChip()?.classList.add('spotlight');
+      }, DEMO.spotLight);
+
+      /* Only now does Aiko take it. The chip travels the same path, into the same
+         box, with the same animation the child's will: they are watching a
+         rehearsal of their own next move. */
+      later(() => {
+        const chip = flagChip();
         if (!chip) return;
+        chip.classList.remove('spotlight');
         chip.classList.add('found');
         flyIntoGrownup(chip);
-        later(() => chip.classList.add('delivered'), 380);
-        later(() => chip.classList.add('collapsed'), 780);
+        later(() => chip.classList.add('delivered'), 420);
+        later(() => chip.classList.add('collapsed'), 860);
       }, DEMO.takeChip);
 
       later(() => box.classList.add('got'), DEMO.gulp);
@@ -547,12 +562,18 @@ export function createUI(t, handlers) {
        lands, and only then does the dock come up with the task. */
     interrupt(message) {
       later(() => el('stranger').classList.add('in'), 200);
-      later(() => el('stranger-bubble').classList.add('show'), 800);
-      later(() => { el('grownup').hidden = false; }, 1100);
+
+      /* Say WHY the game just stopped. Without this the freeze reads as the game
+         breaking, and the whole lesson (he turns up while you are busy and having
+         fun, and playing has to wait) is left for the child to infer. */
+      later(() => { setAiko('risky'); aikoSay(t('strangerHere')); }, 500);
+
+      later(() => el('stranger-bubble').classList.add('show'), 1100);
+      later(() => { el('grownup').hidden = false; }, 1500);
       later(() => {
         el('dock-hint').textContent = message.spot?.prompt ?? t('spotHint');
         el('dock').classList.add('up');
-      }, 1300);
+      }, 1800);
     },
 
     /**
@@ -610,7 +631,11 @@ export function createUI(t, handlers) {
       const btn = el('spot-continue');
       btn.hidden = false;
       btn.classList.add('show');
-      btn.focus();
+      /* preventScroll matters on a phone. A plain focus() scrolls the button
+         into view, and that scroll shifts it out from under a finger already on
+         its way down, so the first tap lands on nothing and the child has to tap
+         twice. The focus itself stays, because a keyboard user needs it. */
+      btn.focus({ preventScroll: true });
     },
     hideKeepGoing() {
       const btn = el('spot-continue');

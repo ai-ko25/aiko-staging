@@ -10,7 +10,7 @@
  * Every fetch carries ?v=BUILD, so changing this one line makes every data file
  * a new address that no cache has ever seen. BUMP IT WHENEVER DATA CHANGES.
  */
-export const BUILD = '2026-07-14a';
+export const BUILD = '2026-07-14c';
 
 /** Stamp a data path so a stale cached copy can never be served in its place. */
 export const versioned = (path) => `${path}?v=${BUILD}`;

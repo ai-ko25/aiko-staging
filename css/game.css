@@ -188,6 +188,10 @@
   padding: 15px 18px 10px;
 }
 
+/* Under the speech bubbles. On a very short screen a long line from Aiko can
+   reach up here, and a covered chip beats a sliced sentence every time. */
+.scene-hud { z-index: 20; }
+
 .scene-chip {
   font-family: var(--font-display);
   font-weight: 700;
@@ -220,7 +224,7 @@
   background: rgba(255, 255, 255, 0.55);
   border-radius: 7px;
   overflow: hidden;
-  z-index: 30;
+  z-index: 20;   /* under the speech bubbles: a covered strip beats sliced words */
 }
 .scene-progress i {
   display: block;
@@ -324,7 +328,12 @@
 .run-hud {
   position: absolute;
   inset-block-start: 78px;
-  inset-inline-start: 18px;
+  /* END side, under the stars, NOT the start side. Aiko and its speech bubble
+     own the start column, and the bubble grows upward into exactly this spot as
+     it gets longer or the screen gets shorter. Keeping the two counters apart by
+     putting them in different columns is the only version of this that cannot
+     collide, whatever the screen height. */
+  inset-inline-end: 18px;
   /* UNDER the bubbles (22+), never over them. Aiko's reply grows upward into
      this same corner, and a long line was landing behind this chip. Whoever is
      speaking wins the pixels. */
@@ -464,7 +473,7 @@
    of the top of the frame. */
 .scene-aiko {
   position: absolute;
-  inset-block-end: min(214px, calc(100% - 250px));
+  inset-block-end: min(228px, calc(100% - 250px));   /* clear of the kid's head */
   inset-inline-start: 26px;
   width: 94px;
   margin: 0;
@@ -489,7 +498,7 @@
 
 .scene-aiko-glow {
   position: absolute;
-  inset-block-end: min(206px, calc(100% - 258px));
+  inset-block-end: min(220px, calc(100% - 258px));
   inset-inline-start: 26px;
   width: 94px;
   height: 44px;
@@ -570,7 +579,7 @@
   /* The second value is the short-screen guard. It was 160px, which left a long
      line only 82px of room before it hit the runner count, so it grew straight
      into it. 196px buys that headroom back. */
-  inset-block-end: min(314px, calc(100% - 196px));
+  inset-block-end: min(330px, calc(100% - 196px));   /* rides above Aiko, which moved up */
   max-width: 236px;
   box-shadow: 0 12px 30px rgba(60, 52, 137, 0.34);
   border-end-start-radius: 6px;
@@ -749,6 +758,22 @@
   transform: scale(1.06) rotate(-2deg);
 }
 
+/* Aiko has found the sketchy part and is showing the child WHICH one it is.
+   It swells and breathes, in the gold of a red flag, and holds there for several
+   seconds before Aiko takes it. Without this the bad line simply vanished and a
+   child never learned which words were the problem. */
+.msg-piece.spotlight {
+  z-index: 30;
+  animation: chip-spotlight 1s ease-in-out infinite;
+  border-color: var(--c-accent);
+  background: var(--c-accent-soft, #fdf0d8);
+  box-shadow: 0 0 0 5px rgba(239, 159, 39, 0.32), 0 10px 22px rgba(60, 52, 137, 0.25);
+}
+@keyframes chip-spotlight {
+  0%, 100% { transform: scale(1.06); }
+  50%      { transform: scale(1.15); }
+}
+
 /* Delivered: it shrinks into the mailbox and is gone. */
 .msg-piece.delivered {
   animation: none;
@@ -883,7 +908,12 @@
   box-shadow: 0 8px 24px rgba(239, 159, 39, 0.45);
   animation: rise 0.3s ease;
 }
-.keep-going:hover { transform: translateY(-2px); }
+/* Hover is a MOUSE idea. On a touch screen iOS can spend the child's first tap
+   applying the hover state instead of firing the click, which is why a button
+   could need tapping twice. Gate every hover effect behind a real pointer. */
+@media (hover: hover) {
+  .keep-going:hover { transform: translateY(-2px); }
+}
 
 /* Takeaway + Next, revealed once the safe choice is made. */
 .dock-after {
@@ -928,9 +958,11 @@
   box-shadow: 0 6px 16px rgba(127, 119, 221, 0.35);
 }
 
-.btn-primary:hover {
-  background: var(--c-primary-dark);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .btn-primary:hover {
+    background: var(--c-primary-dark);
+    transform: translateY(-2px);
+  }
 }
 
 .btn-primary:active {
@@ -1354,7 +1386,9 @@
   box-shadow: 0 8px 22px rgba(239, 159, 39, 0.4);
   transition: transform 0.15s ease;
 }
-.cta:hover { transform: translateY(-2px); }
+@media (hover: hover) {
+  .cta:hover { transform: translateY(-2px); }
+}
 
 /* ---------- World map (islands + winding path) ---------- */
 
@@ -1523,8 +1557,21 @@
     z-index: 60;
     height: 46px;
     padding: 0 14px;
-    /* Room for Back, which tucks into the start corner beside the brand. */
-    padding-inline-start: 74px;
+    /* The brand is taken out of the flow below, which leaves the language button
+       as the only child. space-between would then park it at the START edge, on
+       top of Back. Pin it to the end edge instead. */
+    justify-content: flex-end;
+  }
+
+  /* Aiko sits dead centre, with Back at the start edge and the language button
+     at the end edge. Side by side, Back and the brand were crowding each other. */
+  #app.on-mission .topbar .brand {
+    position: absolute;
+    inset-inline: 0;
+    width: fit-content;
+    margin-inline: auto;
+    justify-content: center;
+    pointer-events: auto;
   }
 
   #app.on-mission .topbar .brand,
@@ -1577,4 +1624,50 @@
      steps aside. It still shows on every other screen, including the mission
      complete screen the child lands on seconds later. */
   #app.on-mission .footer { display: none; }
+}
+
+/* ---------- Short screens: Aiko, its bubble and the message must all fit ----------
+ *
+ * A real phone's browser eats 120 to 150px of the viewport with its address bar,
+ * so the playable stage is far shorter than a design mockup suggests. Aiko and
+ * its bubble are anchored a fixed distance from the BOTTOM, so as the stage
+ * shrinks they climb, and on a real handset they climbed into the score and each
+ * other. Everything in the Aiko column gets smaller and settles lower here.
+ *
+ * The second value in each min() is the guard that does the real work: it stops
+ * the element crossing into the header band no matter how short the stage gets.
+ */
+@media (max-height: 760px) {
+  .scene-aiko {
+    inset-block-end: 226px;   /* clears the kid's head, whatever the height */
+    width: 78px;
+  }
+
+  .scene-aiko-glow {
+    inset-block-end: 218px;
+    width: 78px;
+    height: 38px;
+  }
+
+  .bubble-aiko {
+    inset-block-end: 312px;   /* rides just above Aiko */
+    max-width: 200px;
+    font-size: 13px;
+    padding: 10px 13px;
+  }
+}
+
+/* The very smallest handsets: the kid and the stranger's bubble were touching,
+   and Aiko's line needs to be tighter still to stay clear of the top. */
+@media (max-width: 380px) {
+  .kid { inset-inline-start: 28px; }
+}
+
+@media (max-height: 600px) {
+  .bubble-aiko {
+    inset-block-end: 310px;
+    max-width: 186px;
+    font-size: 12px;
+    padding: 8px 11px;
+  }
 }

@@ -12,10 +12,16 @@
       "demo": {
         "prompt": "Watch Aiko first.",
         "parts": [
-          { "text": "hi 👋 " },
-          { "text": "what school do you go to?", "flag": true }
+          {
+            "text": "hi 👋 "
+          },
+          {
+            "text": "what school do you go to?",
+            "flag": true
+          }
         ],
-        "watch": "Someone new is talking to you. Watch what I do.",
+        "watch": "Uh oh! A stranger just stopped your game. Watch what I do.",
+        "spotting": "Now I'm looking for the part that feels wrong… there it is! 🔎",
         "doing": "I never answer that. I take it to a grown-up. 🚩",
         "over": "Now it's your turn. You try!"
       },
@@ -23,11 +29,15 @@
         {
           "id": "age",
           "parts": [
-            { "text": "hey! you're so good at this game 😄 ",
-              "hint": "That part is just being friendly. Look at what they ask you next." },
-            { "text": "how old are you?",
+            {
+              "text": "hey! you're so good at this game 😄 ",
+              "hint": "That part is just being friendly. Look at what they ask you next."
+            },
+            {
+              "text": "how old are you?",
               "flag": true,
-              "found": "Nice eye! Asking your age is a red flag. 🚩" }
+              "found": "Nice eye! Asking your age is a red flag. 🚩"
+            }
           ],
           "spot": {
             "prompt": "Something here isn't safe. Drag it to a grown-up.",
@@ -36,10 +46,20 @@
           "decide": {
             "prompt": "A stranger just asked how old you are. What should we do?",
             "choices": [
-              { "id": "safe", "icon": "🛡️", "text": "Keep it private", "correct": true,
-                "feedback": "Nice, you kept your age to yourself!" },
-              { "id": "risk", "icon": "💬", "text": "Tell my age", "correct": false,
-                "feedback": "Your age is private. Someone you just met online doesn't need it." }
+              {
+                "id": "safe",
+                "icon": "🛡️",
+                "text": "Keep it private",
+                "correct": true,
+                "feedback": "Nice, you kept your age to yourself!"
+              },
+              {
+                "id": "risk",
+                "icon": "💬",
+                "text": "Tell my age",
+                "correct": false,
+                "feedback": "Your age is private. Someone you just met online doesn't need it."
+              }
             ]
           },
           "parentTag": "asking personal info like your age"
@@ -47,11 +67,15 @@
         {
           "id": "home-alone",
           "parts": [
-            { "text": "cool! ",
-              "hint": "That word is just friendly. Look at the question right after it." },
-            { "text": "are your mum and dad home right now?",
+            {
+              "text": "cool! ",
+              "hint": "That word is just friendly. Look at the question right after it."
+            },
+            {
+              "text": "are your mum and dad home right now?",
               "flag": true,
-              "found": "Exactly! Asking if you're home alone is a red flag. 🚩" }
+              "found": "Exactly! Asking if you're home alone is a red flag. 🚩"
+            }
           ],
           "spot": {
             "prompt": "One part of this isn't safe. Drag it to a grown-up.",
@@ -60,10 +84,20 @@
           "decide": {
             "prompt": "A stranger just asked if you're home alone. What should we do?",
             "choices": [
-              { "id": "risk", "icon": "🏠", "text": "I'm home alone", "correct": false,
-                "feedback": "Whether you're home alone is private. A stranger never needs to know that." },
-              { "id": "safe", "icon": "🙅", "text": "Don't answer", "correct": true,
-                "feedback": "Great, you didn't say who's home!" }
+              {
+                "id": "risk",
+                "icon": "🏠",
+                "text": "I'm home alone",
+                "correct": false,
+                "feedback": "Whether you're home alone is private. A stranger never needs to know that."
+              },
+              {
+                "id": "safe",
+                "icon": "🙅",
+                "text": "Don't answer",
+                "correct": true,
+                "feedback": "Great, you didn't say who's home!"
+              }
             ]
           },
           "parentTag": "asking whether you're home alone"
@@ -71,11 +105,15 @@
         {
           "id": "secret",
           "parts": [
-            { "text": "i'll send you free stuff! ",
-              "hint": "Free stuff sounds fun, but read the next part carefully." },
-            { "text": "just don't tell your parents 🤫",
+            {
+              "text": "i'll send you free stuff! ",
+              "hint": "Free stuff sounds fun, but read the next part carefully."
+            },
+            {
+              "text": "just don't tell your parents 🤫",
               "flag": true,
-              "found": "Yes! Being asked to keep a secret is a big red flag. 🚩" }
+              "found": "Yes! Being asked to keep a secret is a big red flag. 🚩"
+            }
           ],
           "spot": {
             "prompt": "A big red flag is hiding here. Drag it to a grown-up.",
@@ -84,10 +122,20 @@
           "decide": {
             "prompt": "A stranger just asked you to keep a secret from your parents. What should we do?",
             "choices": [
-              { "id": "safe", "icon": "🗣️", "text": "Tell a grown-up", "correct": true,
-                "feedback": "Yes, no secrets from your grown-ups!" },
-              { "id": "risk", "icon": "🤐", "text": "Keep the secret", "correct": false,
-                "feedback": "Being asked to keep a secret from your parents is a big red flag. Always tell a grown-up you trust." }
+              {
+                "id": "safe",
+                "icon": "🗣️",
+                "text": "Tell a grown-up",
+                "correct": true,
+                "feedback": "Yes, no secrets from your grown-ups!"
+              },
+              {
+                "id": "risk",
+                "icon": "🤐",
+                "text": "Keep the secret",
+                "correct": false,
+                "feedback": "Being asked to keep a secret from your parents is a big red flag. Always tell a grown-up you trust."
+              }
             ]
           },
           "parentTag": "asking you to keep a secret from parents"
