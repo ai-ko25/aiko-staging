@@ -8,11 +8,16 @@
  */
 
 import { createRunner } from './minigame.js';
+import { createVoice } from './voice.js';
 
 const el = (id) => document.getElementById(id);
 
 /* The little game the child is playing when the mission opens. */
 const runner = createRunner();
+
+/* Aiko's voice. Silent until the mp3 files exist, and silent for anyone whose
+   browser blocks audio: a child is never blocked by a clip that did not load. */
+const voice = createVoice();
 
 /* How long the child gets to play before the stranger walks in. The first
    message gives them longer, so they learn the game and are properly enjoying it
@@ -88,6 +93,8 @@ function aikoSay(text) {
   const bubble = el('aiko-bubble');
   el('aiko-bubble-text').textContent = text ?? '';
   bubble.classList.toggle('show', Boolean(text));
+  if (text) voice.say(text);          /* the line finds its own recording */
+  else voice.stop();
 }
 
 /* ------------------------------------------------------------------ *
@@ -231,6 +238,10 @@ function startDrag(event, btn, deliver) {
  * @param {Object}   handlers  what to call when the child clicks something
  */
 export function createUI(t, handlers) {
+  /* The document's language is already set by i18n before this runs, so the
+     right set of recordings is chosen without threading the language through. */
+  voice.load(document.documentElement.lang || 'en');
+
   /* Persistent buttons, these exist for the whole session. */
   el('home-btn').addEventListener('click', handlers.onHome);
   el('lang-toggle').addEventListener('click', handlers.onLangToggle);
@@ -304,7 +315,7 @@ export function createUI(t, handlers) {
     show(name) {
       /* Leaving the mission must kill the game, or it keeps running (and
          spawning rocks) behind whatever screen is on top. */
-      if (name !== 'mission') runner.stop();
+      if (name !== 'mission') { runner.stop(); voice.stop(); }
       SCREENS.forEach((key) => { el(`${key}-screen`).hidden = key !== name; });
 
       /* On a phone the mission is not a card on a page, it IS the page: the
@@ -510,7 +521,7 @@ export function createUI(t, handlers) {
       later(() => {
         el('dock-hint').textContent = demo.prompt ?? '';
         el('dock').classList.add('up');
-        aikoSay(demo.watch ?? '');
+        aikoSay(demo.watch ?? '');     /* the demo's own lines carry the voice */
       }, DEMO.watchLine);
 
       const flagChip = () => el('message-text')
@@ -553,7 +564,9 @@ export function createUI(t, handlers) {
         setAiko('idle');
         aikoSay('');
         box.classList.remove('armed', 'over', 'got');
-        el('dock-hint').textContent = message.spot?.prompt ?? t('spotHint');
+        const task = message.spot?.prompt ?? t('spotHint');
+        el('dock-hint').textContent = task;
+        voice.say(task);               /* the child's first task is spoken too */
       }, DEMO.handOver);
     },
 
@@ -571,8 +584,10 @@ export function createUI(t, handlers) {
       later(() => el('stranger-bubble').classList.add('show'), 1100);
       later(() => { el('grownup').hidden = false; }, 1500);
       later(() => {
-        el('dock-hint').textContent = message.spot?.prompt ?? t('spotHint');
+        const task = message.spot?.prompt ?? t('spotHint');
+        el('dock-hint').textContent = task;
         el('dock').classList.add('up');
+        voice.say(task);
       }, 1800);
     },
 
@@ -616,6 +631,7 @@ export function createUI(t, handlers) {
           /* The task line was still ordering them to drag it to a grown-up after
              they already had. It becomes the receipt for what they just did. */
           el('dock-hint').textContent = t('spotDone');
+          voice.say(t('spotDone'));
           later(() => this.showKeepGoing(), 3000);
         }
       } else {
@@ -653,6 +669,7 @@ export function createUI(t, handlers) {
       el('grownup').hidden = true;      /* Spot is over, the mailbox has its flag */
 
       el('dock-hint').textContent = message.decide?.prompt ?? '';
+      voice.say(message.decide?.prompt ?? '');
       el('choices').classList.remove('answered');
       el('choices').replaceChildren(...(message.decide?.choices ?? []).map((choice) => {
         const item = document.createElement('li');
