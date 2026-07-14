@@ -118,7 +118,7 @@
           </div>
           <div class="scene-progress" aria-hidden="true"><i id="progress-fill"></i></div>
 
-          <div class="scene-stage">
+          <div class="scene-stage" id="scene-stage">
             <!-- Atmosphere: soft layered hills, floating motes, a ground strip,
                  and stepping tiles that light up as the conversation advances. -->
             <div class="layer hills-far" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -130,6 +130,16 @@
             <div class="scene-ground" aria-hidden="true"></div>
             <div class="path" id="path" aria-hidden="true"></div>
 
+            <!-- The mini-game the child is already playing when the mission
+                 opens. Rocks slide in along the ground and a tap makes the kid
+                 jump. The stranger later walks in on this same track, and the
+                 game stops: that is the interruption the mission is about. -->
+            <div class="run-hud" id="run-hud" hidden>
+              <span aria-hidden="true">🏃</span><span id="run-score">0</span>
+            </div>
+            <div class="obstacles" id="obstacles" aria-hidden="true"></div>
+            <p class="run-coach" id="run-coach" hidden></p>
+
             <!-- Aiko floats just above the kid, glowing, standing in the scene.
                  ui.js swaps her image and toggles cheer / worried as she reacts. -->
             <div class="scene-aiko-glow" aria-hidden="true"></div>
@@ -139,7 +149,7 @@
 
             <!-- Characters stand ON the ground. The kid is you; the stranger
                  slides in from the side when their message arrives. -->
-            <svg class="kid" viewBox="0 0 90 110" aria-hidden="true">
+            <svg class="kid" id="kid" viewBox="0 0 90 110" aria-hidden="true">
               <defs><linearGradient id="kidShirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3FD39B"/><stop offset="1" stop-color="#1D9E75"/></linearGradient></defs>
               <ellipse cx="45" cy="106" rx="22" ry="5" fill="rgba(40,30,80,.18)"/>
               <path d="M28 70 Q28 58 45 58 Q62 58 62 70 L62 98 Q62 102 58 102 L32 102 Q28 102 28 98 Z" fill="url(#kidShirt)"/>

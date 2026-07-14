@@ -245,7 +245,7 @@ const handlers = {
       ? (result.part.found ?? '')
       : (result.part.hint ?? message.spot?.missHint ?? '');
 
-    state.ui.showSpotResult(result.index, result.flag, say, message.spot?.prompt ?? '', result.canProceed);
+    state.ui.showSpotResult(result.index, result.flag, say, result.canProceed);
   },
 
   /* Every flag in this message is found: the child taps "Keep going". */

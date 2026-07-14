@@ -7,7 +7,18 @@
  * handlers main.js gives it, and draws whatever it's handed.
  */
 
+import { createRunner } from './minigame.js';
+
 const el = (id) => document.getElementById(id);
+
+/* The little game the child is playing when the mission opens. */
+const runner = createRunner();
+
+/* How long the child gets to play before the stranger walks in. The first
+   message gives them longer, so they learn the game and are properly enjoying it
+   when it gets taken away. That is the feeling the mission is teaching. */
+const PLAY_MS_FIRST = 6500;
+const PLAY_MS_NEXT  = 4500;
 
 /* Which sprite Aiko wears for each mood. Presentation assets, not mission
    content, so they live with the drawing code, the engine never sees them. */
@@ -89,6 +100,13 @@ export function createUI(t, handlers) {
     const row = e.target.closest('.list-row');
     if (row && !row.disabled) handlers.onMission(row.dataset.missionId);
   });
+  /* Tap anywhere in the scene to jump. Taps on the message chips are the child
+     working on the red flag, not playing, so they never jump. */
+  el('scene-stage').addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.bubble')) return;
+    runner.jump();
+  });
+
   el('message-text').addEventListener('click', (e) => {
     const piece = e.target.closest('.msg-piece');
     if (piece && !piece.disabled) handlers.onSpot(Number(piece.dataset.pieceIndex));
@@ -109,6 +127,9 @@ export function createUI(t, handlers) {
     },
 
     show(name) {
+      /* Leaving the mission must kill the game, or it keeps running (and
+         spawning rocks) behind whatever screen is on top. */
+      if (name !== 'mission') runner.stop();
       SCREENS.forEach((key) => { el(`${key}-screen`).hidden = key !== name; });
     },
 
@@ -268,28 +289,46 @@ export function createUI(t, handlers) {
       const dock = el('dock');
       dock.classList.remove('up');
       el('choices').replaceChildren();
+      el('choices').classList.remove('answered');
       this.hideKeepGoing();
       el('feedback').hidden = true;
       el('takeaway').hidden = true;
 
       this.show('mission');
 
-      /* Then the moment plays: the stranger walks in, their message arrives,
-         and the dock slides up with Aiko's question and the tap hint. */
-      later(() => el('stranger').classList.add('in'), 300);
-      later(() => el('stranger-bubble').classList.add('show'), 600);
+      /* The child does NOT start by reading a message. They start by PLAYING.
+         The stranger interrupts that game, which is the whole lesson: he arrives
+         while you are busy and enjoying yourself, not with a fanfare. */
+      runner.start({
+        fresh: messageNumber === 1,
+        playMs: messageNumber === 1 ? PLAY_MS_FIRST : PLAY_MS_NEXT,
+        coachText: t('runCoach'),
+        onInterrupt: () => this.interrupt(message),
+      });
+    },
+
+    /* The stranger walks in on the same track the rocks came from. The game
+       freezes (the runner has already done that), he slides in, his message
+       lands, and only then does the dock come up with the task. */
+    interrupt(message) {
+      later(() => el('stranger').classList.add('in'), 200);
+      later(() => el('stranger-bubble').classList.add('show'), 800);
       later(() => {
         el('dock-hint').textContent = message.spot?.prompt ?? t('spotHint');
-        dock.classList.add('up');
-      }, 1200);
+        el('dock').classList.add('up');
+      }, 1300);
     },
 
     /**
      * The child tapped a part of the message. `say` is Aiko's response (from the
-     * part); `promptText` is what the dock hint returns to after a miss, so the
-     * goal is never lost. `canProceed` is true once every flag has been found.
+     * part). `canProceed` is true once every flag has been found.
+     *
+     * Whatever Aiko says here STAYS on screen until the child's next action. It
+     * is never cleared on a timer: a timer started by one tap would otherwise
+     * still be running when the next tap lands, and would wipe the new line
+     * mid-read. That is what made a second-try success flash and vanish.
      */
-    showSpotResult(index, flag, say, promptText, canProceed) {
+    showSpotResult(index, flag, say, canProceed) {
       const btn = el('message-text').querySelector(`[data-piece-index="${index}"]`);
       if (btn) btn.disabled = true;
 
@@ -308,11 +347,10 @@ export function createUI(t, handlers) {
           later(() => this.showKeepGoing(), 3000);
         }
       } else {
-        /* A harmless tap: Aiko's gentle line stays up at least 3 seconds so a
-           child can read it, then fades and the question returns. */
+        /* A harmless tap: Aiko's gentle nudge stays up for as long as the child
+           needs, until they tap again. */
         setAiko('risky');
         aikoSay(say);
-        later(() => { setAiko('idle'); el('dock-hint').textContent = promptText; aikoSay(''); }, 3200);
       }
     },
 
@@ -337,6 +375,7 @@ export function createUI(t, handlers) {
       this.hideKeepGoing();
 
       el('dock-hint').textContent = message.decide?.prompt ?? '';
+      el('choices').classList.remove('answered');
       el('choices').replaceChildren(...(message.decide?.choices ?? []).map((choice) => {
         const item = document.createElement('li');
         item.style.display = 'contents';
@@ -368,6 +407,10 @@ export function createUI(t, handlers) {
           card.disabled = true;
           if (card !== picked) card.classList.add('dim');
         });
+        /* The cards have done their job. Folding them away gives the scene back
+           the room the takeaway panel takes, so Aiko is not crowded onto the kid
+           and her closing line stays readable. */
+        el('choices').classList.add('answered');
 
         setAiko('safe');
         aikoSay(choice.feedback ?? '');

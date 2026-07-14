@@ -18,6 +18,9 @@
     "errorTitle": "Aiko couldn't load the content",
     "errorBody": "This usually means the page was opened directly from a folder. Aiko needs a small local server. Open a terminal in the project folder, run the command below, then visit http://localhost:8000",
 
+    "runCoach": "Tap to jump!",
+    "runPaused": "Your game is paused.",
+
     "spotPrompt": "What feels a little off here?",
     "spotHint": "🔍 Tap the part of the message that feels off",
     "keepGoing": "Keep going →",

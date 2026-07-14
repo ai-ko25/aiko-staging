@@ -151,7 +151,7 @@
   margin-inline: auto;
   display: flex;
   flex-direction: column;
-  height: min(88vh, 880px);
+  height: min(86vh, 760px);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: linear-gradient(180deg, var(--c-sky-top) 0%, var(--c-sky-mid) 45%, var(--c-sky-bot) 72%);
@@ -209,7 +209,7 @@
    message of the conversation is cleared. */
 .scene-progress {
   position: absolute;
-  inset-block-start: 48px;
+  inset-block-start: 62px;   /* clears the star chip, which sits taller than the text */
   inset-inline: 18px;
   height: 7px;
   background: rgba(255, 255, 255, 0.55);
@@ -246,8 +246,8 @@
   inset-block-end: 0;
   border-radius: 50% 50% 0 0;
 }
-.hills-far  { inset-block-end: 150px; height: 200px; }
-.hills-near { inset-block-end: 120px; height: 150px; }
+.hills-far  { inset-block-end: 230px; height: 190px; }
+.hills-near { inset-block-end: 200px; height: 145px; }
 .hills-far span  { background: rgba(255, 255, 255, 0.18); }
 .hills-near span { background: rgba(127, 119, 221, 0.22); }
 .hills-far  span:nth-child(1) { width: 300px; height: 160px; inset-inline-start: -60px; }
@@ -273,12 +273,14 @@
   50%      { transform: translateY(-24px) translateX(12px); }
 }
 
-/* The ground the characters stand on (runner .ground). */
+/* The ground the characters stand on (runner .ground). Tall on purpose: the
+   horizon sits high, and the foreground floor below it is the action zone that
+   holds the conversation and (from step 4) the grown-up target. */
 .scene-ground {
   position: absolute;
   inset-inline: 0;
   inset-block-end: 0;
-  height: 150px;
+  height: 230px;
   z-index: 4;
   background: linear-gradient(180deg, var(--c-ground), var(--c-ground-dark));
   border-start-start-radius: 50% 30px;
@@ -289,16 +291,16 @@
 /* Stepping tiles, one per message, lit as the conversation advances (runner .path/.tile). */
 .path {
   position: absolute;
-  inset-block-end: 84px;
+  inset-block-end: 214px;
   inset-inline: 0;
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: 14px;
   z-index: 6;
 }
 .tile {
-  width: 34px;
-  height: 12px;
+  width: 28px;
+  height: 10px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.45);
   transition: all 0.45s ease;
@@ -309,38 +311,148 @@
   transform: translateY(-2px);
 }
 
+/* ---------- The mini-game: the kid is already playing ---------- */
+
+/* The game's own score. Deliberately PURPLE and a runner icon, never a gold
+   star: gold stars are the safety score, and a child must never learn that
+   catching things and spotting red flags are the same currency. */
+.run-hud {
+  position: absolute;
+  inset-block-start: 78px;
+  inset-inline-start: 18px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
+  padding: 5px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(60, 52, 137, 0.3);
+}
+
+/* An author `display` can beat the `hidden` attribute, so say it outright. */
+.run-hud[hidden],
+.run-coach[hidden] { display: none; }
+
+/* "Tap to jump!", shown for the first couple of seconds only. */
+.run-coach {
+  position: absolute;
+  inset-block-end: 316px;
+  inset-inline: 0;
+  z-index: 22;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--c-primary-dark);
+  animation: coach-pulse 1s ease-in-out infinite;
+}
+@keyframes coach-pulse {
+  0%, 100% { opacity: 0.6; transform: translateY(0); }
+  50%      { opacity: 1;   transform: translateY(-3px); }
+}
+
+.obstacles {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+/* A rock on the track, at the kid's feet. It slides the whole way across using
+   a logical property, so it travels the correct direction in Arabic too. */
+.obstacle {
+  position: absolute;
+  inset-block-end: 132px;
+  inset-inline-end: -30px;
+  width: 22px;
+  height: 26px;
+  border-radius: 50% 50% 22% 22%;
+  background: linear-gradient(180deg, #6e6a88, #4b4770);
+  box-shadow: 0 4px 8px rgba(40, 30, 80, 0.28);
+  animation: obstacle-run 2.6s linear forwards;
+}
+@keyframes obstacle-run {
+  from { inset-inline-end: -30px; }
+  to   { inset-inline-end: calc(100% + 40px); }
+}
+.obstacle.cleared { opacity: 0.35; }
+
+/* The stranger arrives: the whole game stops dead, mid-air, and greys out. The
+   child's score is untouched. */
+.runner-frozen .obstacle {
+  animation-play-state: paused;
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+.runner-frozen .kid { animation-play-state: paused; }
+
 /* ---------- Characters on the ground ---------- */
 
-/* You (runner .kid). */
+/* You (runner .kid). Stands low, on the start side, with Aiko above you. */
 .kid {
   position: absolute;
-  inset-block-end: 104px;
-  inset-inline-start: 60px;
-  width: 80px;
+  inset-block-end: 132px;
+  inset-inline-start: 40px;
+  width: 72px;
   z-index: 10;
   filter: drop-shadow(0 6px 6px rgba(60, 40, 110, 0.25));
 }
 
-/* The stranger waits off-side, then slides in (runner .stranger-svg). */
+/* Order matters: jump and stumble are declared after running, so while the kid
+   carries both classes the jump wins, and running resumes when it is removed. */
+.kid.running { animation: kid-run 0.42s ease-in-out infinite; }
+.kid.jump    { animation: kid-jump 0.62s cubic-bezier(0.3, 1.1, 0.5, 1); }
+.kid.stumble { animation: kid-stumble 0.5s ease; }
+
+@keyframes kid-run {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+@keyframes kid-jump {
+  0%   { transform: translateY(0); }
+  42%  { transform: translateY(-62px); }
+  100% { transform: translateY(0); }
+}
+/* A missed jump costs nothing but a wobble. Nothing in the mini-game can fail a
+   child: failing at the game is not the lesson. */
+@keyframes kid-stumble {
+  0%, 100% { transform: rotate(0); }
+  30%      { transform: rotate(-9deg) translateY(3px); }
+  70%      { transform: rotate(6deg); }
+}
+
+/* The stranger waits off-side, then slides in (runner .stranger-svg). He stands
+   on the end side, further back than the kid and high enough to clear the top of
+   his own message: the chips make that bubble roughly 160px tall, so standing at
+   the kid's depth would bury him behind it. */
 .stranger {
   position: absolute;
-  inset-block-end: 104px;
+  inset-block-end: 186px;
   inset-inline-end: -100px;
-  width: 74px;
+  width: 58px;
   z-index: 9;
   filter: drop-shadow(0 6px 6px rgba(40, 30, 80, 0.25));
   transition: inset-inline-end 0.7s cubic-bezier(0.4, 1.1, 0.5, 1);
 }
-.stranger.in { inset-inline-end: 20px; }
+.stranger.in { inset-inline-end: 16px; }
 
 /* Aiko, the guardian floating above the kid (runner .aiko-wrap + .aiko-glow).
    She is clearly in the scene at a good size, glowing, and her image swaps
    (idle / safe / worried) while cheer / worried tune the glow and the motion. */
+/* She floats clear above the kid's head so his face is never covered. The min()
+   is a safety catch: when the dock grows (choice cards, takeaway, Finish) the
+   scene is squeezed, and without it Aiko and her bubble would climb straight out
+   of the top of the frame. */
 .scene-aiko {
   position: absolute;
-  inset-block-end: 176px;
-  inset-inline-start: 40px;
-  width: 116px;
+  inset-block-end: min(214px, calc(100% - 250px));
+  inset-inline-start: 26px;
+  width: 94px;
   margin: 0;
   z-index: 20;
 }
@@ -363,10 +475,10 @@
 
 .scene-aiko-glow {
   position: absolute;
-  inset-block-end: 168px;
-  inset-inline-start: 40px;
-  width: 116px;
-  height: 52px;
+  inset-block-end: min(206px, calc(100% - 258px));
+  inset-inline-start: 26px;
+  width: 94px;
+  height: 44px;
   z-index: 19;
   pointer-events: none;
   background: radial-gradient(ellipse, rgba(255, 210, 140, 0.5), transparent 70%);
@@ -401,23 +513,27 @@
   pointer-events: auto;
 }
 
-/* The stranger's message: white, end-side, tail pointing down toward them. */
+/* The stranger's message. This is the one the child has to work with, so it sits
+   as low as the scene allows, right above the dock, inside easy thumb reach. The
+   stranger stands directly over it and the tail points UP at him, so the message
+   is unmistakably his. */
 .bubble-stranger {
   background: var(--c-surface);
   color: var(--c-ink);
-  inset-inline-end: 18px;
-  inset-block-start: 92px;
+  inset-inline-end: 14px;
+  inset-block-end: 14px;
+  max-width: 66%;
   box-shadow: 0 10px 28px rgba(60, 52, 137, 0.2);
-  border-end-end-radius: 6px;
+  border-start-end-radius: 6px;
 }
 .bubble-stranger::after {
   content: "";
   position: absolute;
-  inset-block-end: -9px;
-  inset-inline-end: 26px;
+  inset-block-start: -9px;
+  inset-inline-end: 40px;
   border: 9px solid transparent;
-  border-block-start-color: var(--c-surface);
-  border-block-end: 0;
+  border-block-end-color: var(--c-surface);
+  border-block-start: 0;
 }
 .bubble-stranger small {
   display: block;
@@ -430,12 +546,15 @@
   margin-block-end: 3px;
 }
 
-/* Aiko's reply: purple gradient, start-side, tail pointing down toward her. */
+/* Aiko's reply: purple gradient, start-side, sitting directly on her head with
+   the tail pointing down at her. She is the one talking, so it stays with her.
+   It is read-only, so it does not need to be as low as the stranger's. */
 .bubble-aiko {
   background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
   color: #fff;
-  inset-inline-start: 16px;
-  inset-block-start: 60px;
+  inset-inline-start: 14px;
+  inset-block-end: min(314px, calc(100% - 160px));
+  max-width: 210px;
   box-shadow: 0 12px 30px rgba(60, 52, 137, 0.34);
   border-end-start-radius: 6px;
 }
@@ -443,37 +562,75 @@
   content: "";
   position: absolute;
   inset-block-end: -9px;
-  inset-inline-start: 30px;
+  inset-inline-start: 55px;
   border: 9px solid transparent;
   border-block-start-color: var(--c-primary-dark);
   border-block-end: 0;
 }
 
-/* The tappable pieces of the stranger's message. Inline buttons so keyboards
-   and screen readers can reach them too. */
+/* The tappable pieces of the stranger's message. A phone has no hover, so these
+   have to LOOK pressable before a finger ever touches them: raised chips with a
+   real edge, a thumb-sized target, and a slow nudge so the eye finds them.
+   Still buttons, so keyboards and screen readers reach them too. */
+.bubble-msg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-start: 6px;
+}
+
 .msg-piece {
-  display: inline;
+  display: inline-block;
   font: inherit;
-  color: inherit;
-  padding: 0 2px;
-  border-radius: 6px;
+  font-weight: 700;
+  color: var(--c-ink);
+  text-align: start;
+  padding: 10px 12px;
+  min-height: 44px;              /* the smallest target a child's thumb finds */
+  border-radius: 14px;
+  background: var(--c-bg);
+  border: 2px solid var(--c-border);
+  box-shadow: 0 3px 0 rgba(60, 52, 137, 0.16);
   cursor: pointer;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, box-shadow 0.12s ease,
+              background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  animation: chip-nudge 2.6s ease-in-out infinite;
 }
 
-.msg-piece:hover:not(:disabled) {
-  background: var(--aiko-glow-soft);
+.msg-piece:hover:not(:disabled) { border-color: var(--c-primary); }
+
+/* Pressed: the chip sinks onto its own shadow, like a real key. */
+.msg-piece:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 rgba(60, 52, 137, 0.16);
 }
 
-/* A found red flag lights up gold and stays lit. */
+/* A quiet repeating lift. It is the only thing moving inside the bubble, so it
+   reads as "these are the bits you touch" without anyone explaining it. */
+@keyframes chip-nudge {
+  0%, 88%, 100% { transform: translateY(0); }
+  94%           { transform: translateY(-4px); }
+}
+
+/* A found red flag lights up gold, stops nudging, and stays lit. */
 .msg-piece.found {
   background: var(--c-accent);
   color: #3c1e00;
-  box-shadow: 0 0 0 3px var(--aiko-glow);
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 4px var(--aiko-glow);
+  animation: none;
 }
 
+/* A harmless piece already tried: checked off, not taken away. */
 .msg-piece:disabled {
   cursor: default;
+  animation: none;
+}
+.msg-piece:disabled:not(.found) {
+  opacity: 0.5;
+  box-shadow: none;
 }
 
 /* ---------- The dock: hint, choices, takeaway ---------- */
@@ -492,18 +649,37 @@
   translate: 0 0;
 }
 
+/* The task line. This is the child's only instruction, so it is the loudest
+   thing in the dock, not a grey whisper under everything else. Nagi had to tap
+   around at random to work out what the game wanted; this is the answer to that. */
 .dock-hint {
   text-align: center;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--size-sm);
-  color: var(--c-ink-soft);
+  font-weight: 800;
+  font-size: 1.08rem;
+  line-height: 1.3;
+  color: var(--c-ink);
   margin-block-end: var(--sp-3);
 }
 
 .dock-choices {
   display: flex;
   gap: var(--sp-3);
+}
+
+/* Once the child has picked correctly, the cards have done their job. Leaving
+   them on screen costs ~110px of dock, which squeezes the scene and crowds Aiko.
+   ui.js adds this class on a correct answer. */
+.dock-choices.answered {
+  display: none;
+}
+
+/* Every button in the dock is a full-width target. It should be impossible to
+   miss what to press next. */
+.dock .btn {
+  width: 100%;
+  padding-block: var(--sp-4);
+  font-size: 1.05rem;
 }
 
 .choice-card {
@@ -524,6 +700,10 @@
 .choice-card:hover:not(:disabled) {
   border-color: var(--c-primary);
   transform: translateY(-2px);
+}
+
+.choice-card:active:not(:disabled) {
+  transform: translateY(2px);
 }
 
 .choice-ic {

@@ -20,7 +20,7 @@
               "found": "Nice eye! Asking your age is a red flag. 🚩" }
           ],
           "spot": {
-            "prompt": "Someone we don't know sent a message. Something in it isn't safe to answer, can you tap it?",
+            "prompt": "Something here isn't safe. Find it.",
             "missHint": "Hmm, look again, what feels a bit too personal, or pushy?"
           },
           "decide": {
@@ -44,7 +44,7 @@
               "found": "Exactly! Asking if you're home alone is a red flag. 🚩" }
           ],
           "spot": {
-            "prompt": "Here's another message. Tap the part that feels off. 🔍",
+            "prompt": "One part of this isn't safe. Find it.",
             "missHint": "Look again, which part is a stranger not supposed to know?"
           },
           "decide": {
@@ -68,7 +68,7 @@
               "found": "Yes! Being asked to keep a secret is a big red flag. 🚩" }
           ],
           "spot": {
-            "prompt": "Ooh, free stuff! But there's a big red flag hiding here. Spot it!",
+            "prompt": "A big red flag is hiding here. Find it.",
             "missHint": "Look for the part that asks you to hide something from a grown-up."
           },
           "decide": {
