@@ -20,6 +20,26 @@ const runner = createRunner();
 const PLAY_MS_FIRST = 6500;
 const PLAY_MS_NEXT  = 4500;
 
+/* The demo beat's clock, in ms from the moment the stranger interrupts.
+ *
+ * These are READING times, not animation times, and that is the whole point: an
+ * 8-year-old reads far slower than an adult skims, and the first pass of this
+ * went by too fast to follow even for an adult. Each of Aiko's lines gets a
+ * beat of silence after it before anything else moves. If it still reads fast,
+ * these are the only numbers to change.
+ */
+const DEMO = {
+  strangerIn:  200,
+  bubbleUp:    900,
+  boxUp:      1300,
+  watchLine:  1800,   // "Someone new is talking to you. Watch what I do."
+  takeChip:   4400,   // …2.6s to read it before anything moves
+  gulp:       4700,
+  doingLine:  5000,   // "I never answer that. I take it to a grown-up."
+  overLine:   8000,   // …3s to read that
+  handOver:  10800,   // …2.8s to read "Now it's your turn"
+};
+
 /* Which sprite Aiko wears for each mood. Presentation assets, not mission
    content, so they live with the drawing code, the engine never sees them. */
 const AIKO_SPRITE = {
@@ -29,7 +49,7 @@ const AIKO_SPRITE = {
 };
 
 /* Swap Aiko's image and toggle the runner's cheer / worried classes, which
-   tune her glow and give her a little pop or wobble as she reacts. */
+   tune its glow and give it a little pop or wobble as it reacts. */
 function setAiko(mood) {
   const img = el('aiko-img');
   const figure = el('aiko-figure');
@@ -407,7 +427,7 @@ export function createUI(t, handlers) {
     /* ---------------- 5a. Mission, a message plays (SPOT) ----------------
      * A mission is a conversation of several messages. This draws ONE message
      * (the current one) into the scene, then plays the little arrival sequence.
-     * Aiko's opening question sits in the dock hint; her bubble is kept for her
+     * Aiko's opening question sits in the dock hint; its bubble is kept for its
      * reactions, exactly as the runner does, so two long bubbles never collide.
      */
     renderMissionScene(mission, message, messageNumber, messageTotal, stars) {
@@ -449,8 +469,8 @@ export function createUI(t, handlers) {
       /* The child does NOT start by reading a message. They start by PLAYING.
          The stranger interrupts that game, which is the whole lesson: he arrives
          while you are busy and enjoying yourself, not with a fanfare. */
-      /* On the very first message the stranger's opener is Aiko's to answer. She
-         shows the child the move once, on a throwaway line of her own, before
+      /* On the very first message the stranger's opener is Aiko's to answer. Aiko
+         shows the child the move once, on a throwaway line of its own, before
          handing them a real red flag. Nobody should have to guess what to do. */
       const demo = messageNumber === 1 ? mission.demo : null;
 
@@ -463,9 +483,9 @@ export function createUI(t, handlers) {
     },
 
     /**
-     * The demo beat. Aiko does the whole gesture herself, once, on a practice
+     * The demo beat. Aiko does the whole gesture itself, once, on a practice
      * message that is not part of the mission and is never scored, so watching
-     * her never gives away a real answer. Then she hands over.
+     * it never gives away a real answer. Then it hands over.
      *
      * It is fully scripted: the chips are dead (disabled) for its whole length,
      * so a child prodding the screen mid-demo cannot fall into the real Spot
@@ -476,17 +496,17 @@ export function createUI(t, handlers) {
       const box = el('grownup');
       renderParts(demo.parts, { live: false });
 
-      later(() => el('stranger').classList.add('in'), 200);
-      later(() => el('stranger-bubble').classList.add('show'), 800);
-      later(() => { box.hidden = false; }, 1100);
+      later(() => el('stranger').classList.add('in'), DEMO.strangerIn);
+      later(() => el('stranger-bubble').classList.add('show'), DEMO.bubbleUp);
+      later(() => { box.hidden = false; }, DEMO.boxUp);
 
       later(() => {
         el('dock-hint').textContent = demo.prompt ?? '';
         el('dock').classList.add('up');
         aikoSay(demo.watch ?? '');
-      }, 1400);
+      }, DEMO.watchLine);
 
-      /* She reaches in, takes the sketchy part, and posts it. The chip travels
+      /* Aiko reaches in, takes the sketchy part, and posts it. The chip travels
          the same path, into the same box, with the same animation the child's
          will: they are watching a rehearsal of their own next move. */
       later(() => {
@@ -497,13 +517,13 @@ export function createUI(t, handlers) {
         flyIntoGrownup(chip);
         later(() => chip.classList.add('delivered'), 380);
         later(() => chip.classList.add('collapsed'), 780);
-      }, 2600);
+      }, DEMO.takeChip);
 
-      later(() => box.classList.add('got'), 2900);
-      later(() => box.classList.remove('got'), 3500);
+      later(() => box.classList.add('got'), DEMO.gulp);
+      later(() => box.classList.remove('got'), DEMO.gulp + 600);
 
-      later(() => { setAiko('safe'); aikoSay(demo.doing ?? ''); }, 3100);
-      later(() => aikoSay(demo.over ?? ''), 5100);
+      later(() => { setAiko('safe'); aikoSay(demo.doing ?? ''); }, DEMO.doingLine);
+      later(() => aikoSay(demo.over ?? ''), DEMO.overLine);
 
       /* Handover. The practice line is cleared away, the real one arrives, and
          from here everything behaves exactly as it always did. */
@@ -513,7 +533,7 @@ export function createUI(t, handlers) {
         aikoSay('');
         box.classList.remove('armed', 'over', 'got');
         el('dock-hint').textContent = message.spot?.prompt ?? t('spotHint');
-      }, 6600);
+      }, DEMO.handOver);
     },
 
     /* The stranger walks in on the same track the rocks came from. The game
@@ -561,7 +581,7 @@ export function createUI(t, handlers) {
 
         if (canProceed) {
           /* Every flag found. Lock the rest of the message so the celebration
-             is not interrupted, hold Aiko's cheer and her found line on screen,
+             is not interrupted, hold Aiko's cheer and its found line on screen,
              and after a few seconds offer a friendly Keep going. The child sets
              the pace and gets to enjoy the win. No auto-advance. */
           this.setProgress((sceneN - 0.5) / sceneTotal);
@@ -636,7 +656,7 @@ export function createUI(t, handlers) {
         });
         /* The cards have done their job. Folding them away gives the scene back
            the room the takeaway panel takes, so Aiko is not crowded onto the kid
-           and her closing line stays readable. */
+           and its closing line stays readable. */
         el('choices').classList.add('answered');
 
         setAiko('safe');

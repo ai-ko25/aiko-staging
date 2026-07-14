@@ -456,11 +456,11 @@
 .stranger.in { inset-inline-end: 16px; }
 
 /* Aiko, the guardian floating above the kid (runner .aiko-wrap + .aiko-glow).
-   She is clearly in the scene at a good size, glowing, and her image swaps
+   Aiko is clearly in the scene at a good size, glowing, and its image swaps
    (idle / safe / worried) while cheer / worried tune the glow and the motion. */
-/* She floats clear above the kid's head so his face is never covered. The min()
+/* Aiko floats clear above the kid's head so their face is never covered. The min()
    is a safety catch: when the dock grows (choice cards, takeaway, Finish) the
-   scene is squeezed, and without it Aiko and her bubble would climb straight out
+   scene is squeezed, and without it Aiko and its bubble would climb straight out
    of the top of the frame. */
 .scene-aiko {
   position: absolute;
@@ -560,8 +560,8 @@
   margin-block-end: 3px;
 }
 
-/* Aiko's reply: purple gradient, start-side, sitting directly on her head with
-   the tail pointing down at her. She is the one talking, so it stays with her.
+/* Aiko's reply: purple gradient, start-side, sitting directly on its head with
+   the tail pointing down at it. Aiko is the one talking, so it stays with Aiko.
    It is read-only, so it does not need to be as low as the stranger's. */
 .bubble-aiko {
   background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
@@ -987,7 +987,7 @@
   width: clamp(170px, 42vw, 220px);
 }
 
-/* Correct choice: Aiko throws her arms up, brightens, and the glow swells. */
+/* Correct choice: Aiko throws its arms up, brightens, and the glow swells. */
 .aiko.is-safe {
   --glow: 1;
   --glow-scale: 1.12;

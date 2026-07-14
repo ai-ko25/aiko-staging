@@ -3,7 +3,7 @@
  * The whole point of this file is the INTERRUPTION. A real stranger does not
  * announce himself; he arrives while you are busy doing something you enjoy. So
  * the child starts the mission already playing: the kid runs, rocks slide in
- * along the ground, and a tap makes him jump. Then the stranger walks in on the
+ * along the ground, and a tap makes them jump. Then the stranger walks in on the
  * same track the rocks come from, and the game stops dead.
  *
  * The child's game score is kept safe while the message is dealt with. Nothing

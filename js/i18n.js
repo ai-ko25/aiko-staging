@@ -7,6 +7,8 @@
  * "i18n" is the usual shorthand for "internationalisation", i, 18 letters, n.
  */
 
+import { versioned } from './version.js';
+
 export const SUPPORTED_LANGS = ['en', 'ar'];
 export const DEFAULT_LANG = 'en';
 
@@ -46,7 +48,7 @@ export function otherLang(lang) {
 
 /** Fetch the interface labels for one language. */
 export async function loadStrings(lang) {
-  const response = await fetch(`data/strings.${lang}.json`);
+  const response = await fetch(versioned(`data/strings.${lang}.json`));
   if (!response.ok) {
     throw new Error(`Could not load data/strings.${lang}.json (${response.status})`);
   }

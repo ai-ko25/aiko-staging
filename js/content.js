@@ -12,6 +12,7 @@
  */
 
 import { SUPPORTED_LANGS } from './i18n.js';
+import { versioned } from './version.js';
 
 const STATUSES = ['available', 'coming-soon'];
 
@@ -22,7 +23,7 @@ const STATUSES = ['available', 'coming-soon'];
 /** Fetch and check the world map for one language. Returns the world object. */
 export async function loadWorld(lang) {
   const path = `data/world.${lang}.json`;
-  const response = await fetch(path);
+  const response = await fetch(versioned(path));
   if (!response.ok) {
     throw new Error(`Could not load ${path} (${response.status})`);
   }
@@ -35,7 +36,7 @@ export async function loadWorld(lang) {
 /** Fetch and check one topic's missions. Returns the missions array. */
 export async function loadTopicMissions(topicId, lang) {
   const path = `data/missions/${topicId}.${lang}.json`;
-  const response = await fetch(path);
+  const response = await fetch(versioned(path));
   if (!response.ok) {
     throw new Error(`Could not load ${path} (${response.status})`);
   }
@@ -248,7 +249,7 @@ export async function checkContent() {
 }
 
 async function fetchJson(path) {
-  const response = await fetch(path);
+  const response = await fetch(versioned(path));
   if (!response.ok) throw new Error(path);
   return response.json();
 }
