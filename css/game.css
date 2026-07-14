@@ -1494,3 +1494,87 @@
 .list-badge { flex: none; font-size: 11px; font-weight: 800; color: var(--c-accent); }
 .list-badge.list-done { color: var(--c-correct-bright); }
 .list-go { flex: none; font-size: 18px; color: var(--c-on-dark-faint); }
+
+/* ---------- The mission as the whole phone screen ---------- *
+ *
+ * Off a phone, the mission is a framed device sitting on a dark page, with the
+ * brand and language above it and Back above that. On a phone that wastes the
+ * top of the screen on page furniture and pushes the game itself down, and the
+ * whole thing no longer fits in one view.
+ *
+ * Here the frame simply becomes the screen: it fills the viewport edge to edge,
+ * and the three controls (brand, language, back) move INSIDE it as one header
+ * row. Scoped to `.on-mission` (set by ui.js show()) and to phone widths, so the
+ * world, region, topic and complete screens keep the layout they already have.
+ */
+@media (max-width: 560px) {
+  #app.on-mission {
+    padding: 0;
+    gap: 0;
+    min-height: 100dvh;
+  }
+
+  /* The controls now sit on the frame's pale sky, not on the dark page, so they
+     have to flip from light-on-dark to dark-on-light or they vanish. */
+  #app.on-mission .topbar {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: 60;
+    height: 46px;
+    padding: 0 14px;
+    /* Room for Back, which tucks into the start corner beside the brand. */
+    padding-inline-start: 74px;
+  }
+
+  #app.on-mission .topbar .brand,
+  #app.on-mission .topbar .brand-name {
+    color: var(--c-primary-dark);
+    font-size: var(--size-md);
+  }
+
+  #app.on-mission .lang-toggle {
+    color: var(--c-primary-dark);
+    background: rgba(255, 255, 255, 0.78);
+    border-color: rgba(60, 52, 137, 0.14);
+    backdrop-filter: blur(8px);
+  }
+
+  #app.on-mission .stage { flex: 1; }
+
+  #app.on-mission .panel-scene {
+    padding: 0;
+    height: 100dvh;
+  }
+
+  /* Back leaves the page and becomes part of the in-frame header row. */
+  #app.on-mission .panel-scene .back-link {
+    position: fixed;
+    inset-block-start: 13px;
+    inset-inline-start: 14px;
+    z-index: 61;
+    margin: 0;
+    max-width: none;
+    font-size: 13px;
+    color: var(--c-primary-dark);
+  }
+
+  /* The frame stops being a device on a page and becomes the page. */
+  #app.on-mission .scene-frame {
+    height: 100dvh;
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Everything inside the frame drops below the new header row. */
+  #app.on-mission .scene-hud      { inset-block-start: 46px; }
+  #app.on-mission .scene-progress { inset-block-start: 108px; }
+  #app.on-mission .run-hud        { inset-block-start: 124px; }
+
+  /* The practice-space line is what was still pushing the page taller than the
+     screen. It cannot live under a full-screen frame, so on the mission it
+     steps aside. It still shows on every other screen, including the mission
+     complete screen the child lands on seconds later. */
+  #app.on-mission .footer { display: none; }
+}

@@ -305,6 +305,12 @@ export function createUI(t, handlers) {
          spawning rocks) behind whatever screen is on top. */
       if (name !== 'mission') runner.stop();
       SCREENS.forEach((key) => { el(`${key}-screen`).hidden = key !== name; });
+
+      /* On a phone the mission is not a card on a page, it IS the page: the
+         frame fills the screen and the brand, language and back controls move
+         inside it. Only the mission does this, so the world and topic screens
+         are left exactly as they were. The CSS keys off this one class. */
+      el('app').classList.toggle('on-mission', name === 'mission');
     },
 
     showError() {
