@@ -181,6 +181,20 @@
             <div class="bubble bubble-aiko" id="aiko-bubble" role="status" aria-live="polite">
               <span id="aiko-bubble-text"></span>
             </div>
+
+            <!-- Where the sketchy part of the message goes. It sits in the corner
+                 OPPOSITE the stranger, so the drag physically pulls the message
+                 away from him and toward safety. A button, so tap and keyboard
+                 both reach it when a drag will not do. -->
+            <button type="button" class="grownup" id="grownup" hidden>
+              <svg class="grownup-icon" viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="28" y="38" width="8" height="22" rx="3" fill="#8e79d4"/>
+                <rect x="8" y="12" width="48" height="28" rx="11" fill="#1d9e75"/>
+                <rect x="18" y="23" width="28" height="7" rx="3.5" fill="#0f6f52"/>
+                <circle cx="52" cy="11" r="6" fill="#ef9f27"/>
+              </svg>
+              <span class="grownup-label" data-i18n="showGrownup"></span>
+            </button>
           </div>
 
           <!-- The dock slides up with a hint, then the Decide choice cards. -->

@@ -20,11 +20,11 @@
               "found": "Nice eye! Asking your age is a red flag. 🚩" }
           ],
           "spot": {
-            "prompt": "Something here isn't safe. Find it.",
+            "prompt": "Something here isn't safe. Drag it to a grown-up.",
             "missHint": "Hmm, look again, what feels a bit too personal, or pushy?"
           },
           "decide": {
-            "prompt": "Great spotting! Now, what should we do about it?",
+            "prompt": "A stranger just asked how old you are. What should we do?",
             "choices": [
               { "id": "safe", "icon": "🛡️", "text": "Keep it private", "correct": true,
                 "feedback": "Nice, you kept your age to yourself!" },
@@ -44,11 +44,11 @@
               "found": "Exactly! Asking if you're home alone is a red flag. 🚩" }
           ],
           "spot": {
-            "prompt": "One part of this isn't safe. Find it.",
+            "prompt": "One part of this isn't safe. Drag it to a grown-up.",
             "missHint": "Look again, which part is a stranger not supposed to know?"
           },
           "decide": {
-            "prompt": "Good catch! So what do we do here?",
+            "prompt": "A stranger just asked if you're home alone. What should we do?",
             "choices": [
               { "id": "risk", "icon": "🏠", "text": "I'm home alone", "correct": false,
                 "feedback": "Whether you're home alone is private. A stranger never needs to know that." },
@@ -68,11 +68,11 @@
               "found": "Yes! Being asked to keep a secret is a big red flag. 🚩" }
           ],
           "spot": {
-            "prompt": "A big red flag is hiding here. Find it.",
+            "prompt": "A big red flag is hiding here. Drag it to a grown-up.",
             "missHint": "Look for the part that asks you to hide something from a grown-up."
           },
           "decide": {
-            "prompt": "You spotted it! Now, what should we do?",
+            "prompt": "A stranger just asked you to keep a secret from your parents. What should we do?",
             "choices": [
               { "id": "safe", "icon": "🗣️", "text": "Tell a grown-up", "correct": true,
                 "feedback": "Yes, no secrets from your grown-ups!" },

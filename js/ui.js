@@ -69,6 +69,102 @@ function aikoSay(text) {
   bubble.classList.toggle('show', Boolean(text));
 }
 
+/* ------------------------------------------------------------------ *
+ *  Taking the sketchy part of a message to a grown-up.
+ *
+ *  The gesture IS the lesson: you do not delete the bad thing and you do not
+ *  answer it, you hand it to someone safe. Two ways to do it, because a drag
+ *  can misbehave on a real device and a child must never be stranded:
+ *
+ *    drag  the chip into the mailbox, or
+ *    tap   the chip (it lifts, the mailbox starts calling) then tap the mailbox.
+ *
+ *  Either way it ends in the same place: handlers.onSpot(index), which is the
+ *  exact call a plain tap made before. The engine never learns any of this.
+ * ------------------------------------------------------------------ */
+
+const DRAG_SLOP = 8;     // finger wobble below this is a tap, not a drag
+const CATCH_PAD = 14;    // the mailbox catches a little wider than it looks
+
+let liftedIndex = null;
+
+const chipAt = (index) =>
+  el('message-text').querySelector(`[data-piece-index="${index}"]`);
+
+function armGrownup(on) {
+  el('grownup').classList.toggle('armed', on);
+}
+
+/** Tap path: the chip rises into the child's hand and the mailbox calls for it. */
+function liftChip(btn) {
+  dropChip();
+  btn.classList.add('lifted');
+  liftedIndex = Number(btn.dataset.pieceIndex);
+  armGrownup(true);
+}
+
+function dropChip() {
+  el('message-text').querySelectorAll('.lifted')
+    .forEach((n) => n.classList.remove('lifted'));
+  liftedIndex = null;
+  armGrownup(false);
+}
+
+/** Generous hit box, because a child's aim with a thumb is not a mouse pointer. */
+function overGrownup(x, y) {
+  const box = el('grownup');
+  if (box.hidden) return false;
+  const r = box.getBoundingClientRect();
+  return x >= r.left - CATCH_PAD && x <= r.right + CATCH_PAD
+      && y >= r.top - CATCH_PAD  && y <= r.bottom + CATCH_PAD;
+}
+
+/** One pointer path for mouse and touch alike. `deliver` is handlers.onSpot. */
+function startDrag(event, btn, deliver) {
+  const startX = event.clientX;
+  const startY = event.clientY;
+  let dragging = false;
+
+  btn.setPointerCapture(event.pointerId);
+
+  const move = (e) => {
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    if (!dragging && Math.hypot(dx, dy) > DRAG_SLOP) {
+      dragging = true;
+      dropChip();
+      btn.classList.add('dragging');
+      armGrownup(true);
+    }
+    if (!dragging) return;
+
+    btn.style.translate = `${dx}px ${dy}px`;
+    el('grownup').classList.toggle('over', overGrownup(e.clientX, e.clientY));
+  };
+
+  const end = (e) => {
+    btn.removeEventListener('pointermove', move);
+    btn.removeEventListener('pointerup', end);
+    btn.removeEventListener('pointercancel', end);
+    el('grownup').classList.remove('over');
+
+    /* Barely moved: that was a tap, so fall back to lift-then-tap-the-mailbox. */
+    if (!dragging) { liftChip(btn); return; }
+
+    const landed = overGrownup(e.clientX, e.clientY);
+    btn.classList.remove('dragging');
+    btn.style.translate = '';         // snaps home if it did not land
+    armGrownup(false);
+
+    if (landed) deliver(Number(btn.dataset.pieceIndex));
+  };
+
+  btn.addEventListener('pointermove', move);
+  btn.addEventListener('pointerup', end);
+  btn.addEventListener('pointercancel', end);
+}
+
 /**
  * @param {Function} t         translator from i18n.js
  * @param {Object}   handlers  what to call when the child clicks something
@@ -107,9 +203,27 @@ export function createUI(t, handlers) {
     runner.jump();
   });
 
+  /* Grab a chip: drag it to the grown-up, or tap it to lift it. */
+  el('message-text').addEventListener('pointerdown', (e) => {
+    const piece = e.target.closest('.msg-piece');
+    if (!piece || piece.disabled) return;
+    e.preventDefault();                 // no text selection, no scroll hijack
+    startDrag(e, piece, handlers.onSpot);
+  });
+
+  /* Keyboard only (a real click from a pointer is handled above). Enter or Space
+     lifts the chip; the child then moves to the mailbox and presses again. */
   el('message-text').addEventListener('click', (e) => {
     const piece = e.target.closest('.msg-piece');
-    if (piece && !piece.disabled) handlers.onSpot(Number(piece.dataset.pieceIndex));
+    if (piece && !piece.disabled && e.detail === 0) liftChip(piece);
+  });
+
+  /* The mailbox: the second half of the tap fallback. */
+  el('grownup').addEventListener('click', () => {
+    if (liftedIndex == null) return;
+    const index = liftedIndex;
+    dropChip();
+    handlers.onSpot(index);
   });
   el('choices').addEventListener('click', (e) => {
     const card = e.target.closest('.choice-card');
@@ -284,6 +398,9 @@ export function createUI(t, handlers) {
       /* Everything starts hidden and calm. */
       el('stranger-bubble').classList.remove('show');
       el('stranger').classList.remove('in');
+      el('grownup').hidden = true;
+      el('grownup').classList.remove('armed', 'over', 'got');
+      dropChip();
       aikoSay('');
       setAiko('idle');
       const dock = el('dock');
@@ -313,6 +430,7 @@ export function createUI(t, handlers) {
     interrupt(message) {
       later(() => el('stranger').classList.add('in'), 200);
       later(() => el('stranger-bubble').classList.add('show'), 800);
+      later(() => { el('grownup').hidden = false; }, 1100);
       later(() => {
         el('dock-hint').textContent = message.spot?.prompt ?? t('spotHint');
         el('dock').classList.add('up');
@@ -329,11 +447,20 @@ export function createUI(t, handlers) {
      * mid-read. That is what made a second-try success flash and vanish.
      */
     showSpotResult(index, flag, say, canProceed) {
-      const btn = el('message-text').querySelector(`[data-piece-index="${index}"]`);
+      const btn = chipAt(index);
+      dropChip();
       if (btn) btn.disabled = true;
 
       if (flag) {
-        if (btn) btn.classList.add('found');
+        /* It lights up gold first, so the child SEES what they caught, and only
+           then does the mailbox swallow it. Handed over, not deleted. */
+        const box = el('grownup');
+        box.classList.add('got');
+        later(() => box.classList.remove('got'), 600);
+        if (btn) {
+          btn.classList.add('found');
+          later(() => btn.classList.add('delivered'), 800);
+        }
         setAiko('safe');
         aikoSay(say);
 
@@ -373,6 +500,8 @@ export function createUI(t, handlers) {
       setAiko('idle');
       aikoSay('');
       this.hideKeepGoing();
+      dropChip();
+      el('grownup').hidden = true;      /* Spot is over, the mailbox has its flag */
 
       el('dock-hint').textContent = message.decide?.prompt ?? '';
       el('choices').classList.remove('answered');
