@@ -4,6 +4,11 @@
 #app {
   position: relative;
   z-index: 1;                 /* above the body star dust */
+  /* Kills double-tap-to-zoom. A child tapping fast to jump was zooming the page
+     instead, and the browser was holding every tap back to see if a second one
+     was coming, which is what ate the first press of a button. Pinch zoom still
+     works, so nobody who needs to magnify loses it. */
+  touch-action: manipulation;
   max-width: 44rem;
   margin-inline: auto;
   padding: var(--sp-5) var(--sp-4);
@@ -610,7 +615,8 @@
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.12s ease, box-shadow 0.12s ease,
-              background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+              background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease,
+              translate 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: chip-nudge 2.6s ease-in-out infinite;
 }
 
@@ -687,9 +693,15 @@
   text-align: center;
 }
 
-/* A chip is held or selected: the mailbox wakes up and asks for it. */
+/* It breathes from the moment it appears, so the eye finds the target without
+   anyone having to read the task line at the bottom first. */
+.grownup:not([hidden]) {
+  animation: grownup-call 1.9s ease-in-out infinite;
+}
+
+/* A chip is held or selected: the mailbox wakes up and asks for it, faster. */
 .grownup.armed {
-  animation: grownup-call 1.1s ease-in-out infinite;
+  animation-duration: 1.1s;
 }
 @keyframes grownup-call {
   0%, 100% { transform: scale(1);    box-shadow: 0 6px 18px rgba(60, 52, 137, 0.18); }
@@ -732,6 +744,7 @@
   animation: none;
   pointer-events: none;
   cursor: grabbing;
+  transition: none;              /* follow the finger with no lag behind it */
   box-shadow: 0 14px 26px rgba(60, 52, 137, 0.35);
   transform: scale(1.06) rotate(-2deg);
 }
@@ -1203,6 +1216,38 @@
 
 @keyframes confetti-fall {
   to { transform: translateY(105vh) rotate(640deg); }
+}
+
+/* The celebration is the payoff, so it has to land in one eyeful on a phone.
+   It was running off the bottom and the child had to scroll to find the buttons,
+   which is a rotten way to end a mission. On a short screen everything tightens
+   until it fits. */
+@media (max-height: 850px) {
+  #complete-screen { padding: var(--sp-5) var(--sp-4); }
+  #complete-screen .aiko { margin-block-end: var(--sp-3); }
+  #complete-screen .aiko-lg .aiko-img { width: clamp(110px, 27vw, 150px); }
+  #complete-screen .star-row { font-size: 1.6rem; margin-block: var(--sp-1) var(--sp-2); }
+  #complete-screen .panel-title { margin-block-end: var(--sp-2); }
+  #complete-screen .parent-note {
+    margin-block: var(--sp-2) var(--sp-4);
+    padding: var(--sp-3);
+  }
+}
+
+/* A small phone (an SE is 667px tall) was still pushing "Back to missions" off
+   the bottom by about 80px. Every part gives up a little so nothing is lost. */
+@media (max-height: 700px) {
+  #complete-screen { padding: var(--sp-4); }
+  #complete-screen .aiko { margin-block-end: var(--sp-2); }
+  #complete-screen .aiko-lg .aiko-img { width: 84px; }
+  #complete-screen .panel-title { font-size: var(--size-lg); margin-block-end: var(--sp-1); }
+  #complete-screen .star-row { font-size: 1.3rem; margin-block: 0 var(--sp-2); }
+  #complete-screen .panel-body { font-size: var(--size-sm); }
+  #complete-screen .parent-note {
+    font-size: 0.8rem;
+    padding: var(--sp-2) var(--sp-3);
+    margin-block: var(--sp-2) var(--sp-3);
+  }
 }
 
 /* ---------- Button row (topic complete) ---------- */

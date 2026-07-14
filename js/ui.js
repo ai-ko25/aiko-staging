@@ -110,6 +110,29 @@ function dropChip() {
   armGrownup(false);
 }
 
+/** How far a chip has already been shifted from where the text flow put it. */
+function currentShift(btn) {
+  const m = /(-?[\d.]+)px\s+(-?[\d.]+)px/.exec(btn.style.translate || '');
+  return m ? [Number(m[1]), Number(m[2])] : [0, 0];
+}
+
+/**
+ * Send the chip the rest of the way into the mailbox and leave it there.
+ *
+ * A dropped chip used to spring back to the bubble and only then fade, which
+ * read as "rejected, put it back" at the exact moment the child got it right.
+ * It now lands where they aimed it and disappears into the box. The tap path
+ * calls this too, so the chip visibly flies across rather than teleporting.
+ */
+function flyIntoGrownup(btn) {
+  const [sx, sy] = currentShift(btn);
+  const chip = btn.getBoundingClientRect();
+  const box = el('grownup').getBoundingClientRect();
+  const dx = (box.left + box.width / 2) - (chip.left + chip.width / 2);
+  const dy = (box.top + box.height / 2) - (chip.top + chip.height / 2);
+  btn.style.translate = `${sx + dx}px ${sy + dy}px`;
+}
+
 /** Generous hit box, because a child's aim with a thumb is not a mouse pointer. */
 function overGrownup(x, y) {
   const box = el('grownup');
@@ -154,10 +177,12 @@ function startDrag(event, btn, deliver) {
 
     const landed = overGrownup(e.clientX, e.clientY);
     btn.classList.remove('dragging');
-    btn.style.translate = '';         // snaps home if it did not land
     armGrownup(false);
 
-    if (landed) deliver(Number(btn.dataset.pieceIndex));
+    /* Landed: it stays where the child put it, and showSpotResult settles it the
+       rest of the way in. Missed: it springs home, and only then. */
+    if (!landed) { btn.style.translate = ''; return; }
+    deliver(Number(btn.dataset.pieceIndex));
   };
 
   btn.addEventListener('pointermove', move);
@@ -452,16 +477,18 @@ export function createUI(t, handlers) {
       if (btn) btn.disabled = true;
 
       if (flag) {
-        /* It lights up gold first, so the child SEES what they caught, and only
-           then does the mailbox swallow it. Handed over, not deleted. */
+        /* It flashes gold so the child SEES what they caught, rides the rest of
+           the way into the mailbox, and is swallowed there. Handed over to a
+           grown-up, never bounced back to the child and never just deleted. */
         const box = el('grownup');
-        box.classList.add('got');
-        later(() => box.classList.remove('got'), 600);
         if (btn) {
           btn.classList.add('found');
-          later(() => btn.classList.add('delivered'), 800);
-          later(() => btn.classList.add('collapsed'), 1200);  /* take the space back */
+          flyIntoGrownup(btn);
+          later(() => btn.classList.add('delivered'), 380);
+          later(() => btn.classList.add('collapsed'), 780);   /* take the space back */
         }
+        later(() => box.classList.add('got'), 300);           /* it gulps as the chip lands */
+        later(() => box.classList.remove('got'), 900);
         setAiko('safe');
         aikoSay(say);
 
