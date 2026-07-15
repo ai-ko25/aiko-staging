@@ -4,6 +4,8 @@
   "langToggle": "العربية",
   "ui": {
     "appTitle": "Aiko",
+    "soundOn": "Sound on",
+    "soundOff": "Sound off",
     "greeting": "Hi! I'm Aiko.",
     "tagline": "Your online-safety buddy. Ready to explore the world together?",
     "enter": "Enter the world",

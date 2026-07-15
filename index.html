@@ -27,6 +27,12 @@
 
       <div class="topbar-right">
         <p class="score" id="score" hidden></p>
+        <!-- Thirty children playing this at once in one classroom is the reason
+             this exists. A teacher must be able to silence it in one tap, and
+             the choice has to survive a reload. -->
+        <button type="button" class="sound-toggle" id="sound-toggle" aria-pressed="true">
+          <span id="sound-icon" aria-hidden="true">🔊</span>
+        </button>
         <button type="button" class="lang-toggle" id="lang-toggle"></button>
       </div>
     </header>

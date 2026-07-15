@@ -23,6 +23,18 @@ const voice = createVoice();
 /* The sounds of the world. Synthesised, so there is nothing to download. */
 const sfx = createSfx();
 
+/* Whether sound is on. Remembered, because a teacher who mutes this for a class
+   should not have to mute it again after every reload. Blocked storage (private
+   browsing, locked-down school devices) must never break the game, so a failure
+   to remember simply means sound stays on. */
+const SOUND_KEY = 'aiko.sound';
+function soundRemembered() {
+  try { return window.localStorage.getItem(SOUND_KEY) !== 'off'; } catch { return true; }
+}
+function rememberSound(on) {
+  try { window.localStorage.setItem(SOUND_KEY, on ? 'on' : 'off'); } catch { /* fine */ }
+}
+
 /* How long the child gets to play before the stranger walks in. The first
    message gives them longer, so they learn the game and are properly enjoying it
    when it gets taken away. That is the feeling the mission is teaching. */
@@ -253,6 +265,27 @@ export function createUI(t, handlers) {
      first touch anywhere wakes the audio engine, so the first sound that MATTERS
      is never the one that gets swallowed. */
   document.addEventListener('pointerdown', () => sfx.unlock(), { once: true });
+
+  /* Sound on/off. It governs BOTH the effects and Aiko's voice: a child who
+     mutes the game means all of it, not just the beeps. */
+  let soundOn = soundRemembered();
+  const applySound = () => {
+    sfx.setEnabled(soundOn);
+    voice.setEnabled(soundOn);
+    const btn = el('sound-toggle');
+    el('sound-icon').textContent = soundOn ? '🔊' : '🔇';
+    btn.setAttribute('aria-pressed', String(soundOn));
+    btn.setAttribute('aria-label', t(soundOn ? 'soundOn' : 'soundOff'));
+    btn.title = t(soundOn ? 'soundOn' : 'soundOff');
+  };
+  applySound();
+
+  el('sound-toggle').addEventListener('click', () => {
+    soundOn = !soundOn;
+    rememberSound(soundOn);
+    applySound();
+    if (soundOn) { sfx.unlock(); sfx.play('tap'); }   /* hear that it came back */
+  });
 
   /* Persistent buttons, these exist for the whole session. */
   el('home-btn').addEventListener('click', handlers.onHome);
@@ -615,7 +648,7 @@ export function createUI(t, handlers) {
     showSpotResult(index, flag, say, canProceed) {
       const btn = chipAt(index);
       dropChip();
-      if (btn) btn.disabled = true;
+      if (flag && btn) btn.disabled = true;
 
       if (flag) {
         /* It flashes gold so the child SEES what they caught, rides the rest of
@@ -648,8 +681,16 @@ export function createUI(t, handlers) {
           later(() => this.showKeepGoing(), 3000);
         }
       } else {
-        /* A harmless tap: Aiko's gentle nudge stays up for as long as the child
-           needs, until they tap again. */
+        /* The child brought a harmless part to the grown-up. It is NOT posted:
+           it flies back to where it came from, and the message closes up around
+           it as if nothing happened. Only a red flag ever leaves the bubble.
+           It stays draggable, because "that's not the one" has to be followed by
+           "so try another", not by a piece of the screen going dead.
+           Aiko's nudge stays up for as long as the child needs it. */
+        if (btn) {
+          btn.style.translate = '';
+          btn.classList.remove('lifted', 'dragging', 'spotlight');
+        }
         sfx.play('wrong');
         setAiko('risky');
         aikoSay(say);
@@ -746,7 +787,13 @@ export function createUI(t, handlers) {
           later(() => { picked.classList.remove('risk-pick'); picked.classList.add('dim'); }, 950);
         }
         setAiko('risky');
-        aikoSay(`${choice.feedback ?? ''} ${t('tryAgain')}`.trim());
+        /* Aiko explains WHY. The invitation to try again goes to the dock, where
+           the child's other instructions live, instead of being bolted onto the
+           end of the speech bubble: it was the longest thing Aiko ever said, and
+           on a small phone it grew up over the progress bar and the top of the
+           screen. The explanation is Aiko's; the instruction is the dock's. */
+        aikoSay(choice.feedback ?? '');
+        el('dock-hint').textContent = t('tryAgain');
       }
     },
 
