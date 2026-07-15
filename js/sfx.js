@@ -104,11 +104,22 @@ const SOUNDS = {
 
   /* The runner. A jump lifts, a cleared rock rings, a stumble is a soft bump
      with no sting in it: missing a rock costs nothing, and it should not sound
-     like it does. */
+     like it does. A rock sliding in gives a faint tick, so the jump has a
+     rhythm to fall into rather than arriving from silence. */
+  tick:     () => note({ type: 'triangle', freq: 1500, dur: 0.03, gain: 0.08 }),
   jump:     () => note({ type: 'sine', freq: [420, 760], dur: 0.16, gain: 0.35 }),
   clear:    () => { note({ type: 'sine', freq: 880, dur: 0.09, gain: 0.3 });
                     note({ type: 'sine', freq: 1320, dur: 0.12, delay: 0.06, gain: 0.22 }); },
   stumble:  () => note({ type: 'triangle', freq: [260, 170], dur: 0.18, gain: 0.3 }),
+
+  /* The dock sheet rising with a new question: a soft upward brush of air, so
+     the panel feels like it slid rather than blinked into place. */
+  slide:    () => noise({ dur: 0.22, gain: 0.1, from: 380, to: 1300 }),
+
+  /* Footfalls under the stranger's arrival tone: two soft low thuds, the sound
+     of someone walking up while you were not looking. Quiet on purpose. */
+  footstep: () => { note({ type: 'sine', freq: 150, dur: 0.09, gain: 0.22 });
+                    note({ type: 'sine', freq: 130, dur: 0.11, delay: 0.22, gain: 0.2 }); },
 
   /* The stranger arrives and the game stops. Two low notes, falling. The only
      tense sound in the game, and deliberately quiet: unease, not fear. */

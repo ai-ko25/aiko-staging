@@ -61,6 +61,7 @@ export function createRunner() {
     const rock = document.createElement('i');
     rock.className = 'obstacle';
     el('obstacles').append(rock);
+    sfx.play('tick');                 /* the rock announces itself, faintly */
 
     /* The only rule in the game: when the rock draws level with the kid, was he
        in the air? A miss costs nothing but a stumble. Nothing here can fail a

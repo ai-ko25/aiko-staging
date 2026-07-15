@@ -84,6 +84,30 @@ function setAiko(mood) {
 /* Every screen is a <section> in index.html; show() reveals exactly one. */
 const SCREENS = ['loading', 'error', 'open', 'world', 'region', 'topic', 'mission', 'complete'];
 
+/**
+ * Activate on the touch itself, not on the click iOS synthesises after it.
+ *
+ * The "Keep going" button appears the instant a red flag is posted, and on iOS
+ * Safari the FIRST tap on a freshly appeared button is spent settling its
+ * hover/active state, so the click only lands on the second tap. pointerup has
+ * no such delay: it fires on the real finger-up. We run the handler there and
+ * swallow the click that follows so it cannot run twice. A keyboard press fires
+ * only click (no pointer), so that path still works.
+ */
+function onTap(node, fn) {
+  let justFired = false;
+  node.addEventListener('pointerup', (e) => {
+    if (e.button && e.button !== 0) return;
+    justFired = true;
+    setTimeout(() => { justFired = false; }, 700);
+    fn(e);
+  });
+  node.addEventListener('click', (e) => {
+    if (justFired) { justFired = false; return; }
+    fn(e);
+  });
+}
+
 /** Small helper: make an element with a class and text in one line. */
 function make(tag, className, text) {
   const node = document.createElement(tag);
@@ -294,8 +318,8 @@ export function createUI(t, handlers) {
   el('region-back').addEventListener('click', handlers.onExitRegion);
   el('topic-back').addEventListener('click', handlers.onExitTopic);
   el('mission-back').addEventListener('click', handlers.onExitMission);
-  el('spot-continue').addEventListener('click', handlers.onSpotContinue);
-  el('next-btn').addEventListener('click', handlers.onNext);
+  onTap(el('spot-continue'), handlers.onSpotContinue);
+  onTap(el('next-btn'), handlers.onNext);
   el('replay-btn').addEventListener('click', handlers.onReplay);
   el('more-topics-btn').addEventListener('click', handlers.onExitComplete);
 
@@ -559,13 +583,14 @@ export function createUI(t, handlers) {
       const box = el('grownup');
       renderParts(demo.parts, { live: false });
 
-      later(() => { el('stranger').classList.add('in'); sfx.play('stranger'); }, DEMO.strangerIn);
+      later(() => { el('stranger').classList.add('in'); sfx.play('stranger'); sfx.play('footstep'); }, DEMO.strangerIn);
       later(() => el('stranger-bubble').classList.add('show'), DEMO.bubbleUp);
       later(() => { box.hidden = false; }, DEMO.boxUp);
 
       later(() => {
         el('dock-hint').textContent = demo.prompt ?? '';
         el('dock').classList.add('up');
+        sfx.play('slide');
         aikoSay(demo.watch ?? '');     /* the demo's own lines carry the voice */
       }, DEMO.watchLine);
 
@@ -624,7 +649,7 @@ export function createUI(t, handlers) {
       /* Say WHY the game just stopped. Without this the freeze reads as the game
          breaking, and the whole lesson (he turns up while you are busy and having
          fun, and playing has to wait) is left for the child to infer. */
-      later(() => { sfx.play('stranger'); setAiko('risky'); aikoSay(t('strangerHere')); }, 500);
+      later(() => { sfx.play('stranger'); sfx.play('footstep'); setAiko('risky'); aikoSay(t('strangerHere')); }, 500);
 
       later(() => el('stranger-bubble').classList.add('show'), 1100);
       later(() => { el('grownup').hidden = false; }, 1500);
@@ -632,6 +657,7 @@ export function createUI(t, handlers) {
         const task = message.spot?.prompt ?? t('spotHint');
         el('dock-hint').textContent = task;
         el('dock').classList.add('up');
+        sfx.play('slide');
         voice.say(task);
       }, 1800);
     },
@@ -741,6 +767,7 @@ export function createUI(t, handlers) {
       el('feedback').hidden = true;
       el('takeaway').hidden = true;
       el('dock').classList.add('up');
+      sfx.play('slide');
     },
 
     /* ---------------- 5c. Mission, REACT (after a Decide guess) ----------------
@@ -810,6 +837,9 @@ export function createUI(t, handlers) {
       el('final-score').textContent = t('finalScore', { score: stars, total });
       el('parent-note-text').textContent = parentNoteText ?? '';
 
+      /* One sparkle per EARNED star, timed to the pops (0.16s apart, matching
+         the CSS animation-delay), then the mission fanfare over the top. */
+      for (let i = 0; i < stars; i++) later(() => sfx.play('star'), 200 + i * 160);
       sfx.play('complete');
       this.show('complete');
       confetti();
